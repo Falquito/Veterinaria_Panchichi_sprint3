@@ -5,6 +5,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { CategoriasModule } from './categorias/categorias.module';
 import { LotesModule } from './lotes/lotes.module';
 import { DepositosModule } from './depositos/depositos.module';
+import { LoteXDeposito } from './entities/LoteXDeposito.entity';
 
 @Module({
   imports: [ProductosModule,
@@ -14,11 +15,15 @@ import { DepositosModule } from './depositos/depositos.module';
           type: 'postgres',
           url:process.env.DB_URL,
           autoLoadEntities:true,//carga automaticamente las entidades
-          synchronize:false //los cambios en las tablas se sincronizan
+          synchronize:false, //los cambios en las tablas se sincronizan
+          entities:[
+            __dirname + '/**/*.entity{.ts,.js}'
+          ]
         }),
         CategoriasModule,
         LotesModule,
-        DepositosModule
+        DepositosModule,
+        
   ],
   controllers: [],
   providers: [],

@@ -1,4 +1,5 @@
-import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
+import { LoteXDeposito } from "src/entities/LoteXDeposito.entity";
+import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from "typeorm";
 
 @Entity()
 export class Deposito {
@@ -11,5 +12,8 @@ export class Deposito {
 
     @Column({type:"text"})
     direccion:string;
+
+    @OneToMany(() => LoteXDeposito,(loteXDeposito) => loteXDeposito.deposito,{ eager: true })
+    lotesDeposito:LoteXDeposito[];
 
 }

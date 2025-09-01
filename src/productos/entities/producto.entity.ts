@@ -1,5 +1,6 @@
 import { Categoria } from "src/categorias/entities/categoria.entity";
-import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
+import { Lote } from "src/lotes/entities/lote.entity";
+import { Column, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn } from "typeorm";
 
 @Entity()
 export class Producto {
@@ -27,6 +28,9 @@ export class Producto {
 
 
     //(N,1) para lotes
+    @OneToMany(() => Lote, (lote) => lote.idProducto)
+    lotes: Lote[];
+    
 
     
 }

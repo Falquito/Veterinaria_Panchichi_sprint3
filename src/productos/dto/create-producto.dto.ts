@@ -17,11 +17,21 @@ export class CreateProductoDto {
     @IsPositive()
     categoriaId:number;
 
+    @IsString()
+    imagenUrl?:string;
+
+    @IsString()
+    fechaelaboracion?:string;
+
+    @IsString()
+    fechaVencimiento?:string;
+
     @IsNumber()
     @IsPositive()
-    stock:number;
+    IdDeposito?:number;
 
-    imagenUrl?:string;
+    @IsString()
+    cantidad?:string;
 
 
 }
