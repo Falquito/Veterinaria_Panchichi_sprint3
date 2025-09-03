@@ -217,8 +217,8 @@ export class ProductosService {
     if (!product) {
       throw new NotFoundException(`Producto con id ${id} no encontrado`);
     }
-
-    await this.productRepository.remove(product);
+    product.activo=false
+    await this.productRepository.save(product);
 
     return { message: `Producto con id ${id} eliminado correctamente` };
   }
