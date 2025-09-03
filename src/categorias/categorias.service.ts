@@ -34,16 +34,14 @@ export class CategoriasService {
   }
 
   async findAll(): Promise<Categoria[]> {
-    return await this.categoriaRepository.find({
-      relations: ['productos'], 
+    return await this.categoriaRepository.find({ 
       order: { nombre: 'ASC' }
     });
   }
 
   async findOne(id: number): Promise<Categoria> {
     const categoria = await this.categoriaRepository.findOne({
-      where: { id },
-      relations: ['productos']
+      where: { id }
     });
 
     if (!categoria) {

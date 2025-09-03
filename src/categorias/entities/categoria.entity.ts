@@ -20,7 +20,7 @@ export class Categoria {
     @UpdateDateColumn()
     updatedAt: Date;
 
-    @OneToMany(()=> Producto,(producto)=>producto.categoria)
+    @OneToMany(()=> Producto,(producto)=>producto.categoria,{eager:false})
     productos:Producto[];
 
     // (1,N) por parte de categoria
