@@ -16,4 +16,7 @@ export class Deposito {
     @OneToMany(() => LoteXDeposito,(loteXDeposito) => loteXDeposito.deposito,{ eager: true })
     lotesDeposito:LoteXDeposito[];
 
+    @Column({type:"bool"})
+    activo:boolean
+
 }
