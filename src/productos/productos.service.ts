@@ -107,11 +107,33 @@ export class ProductosService {
       .innerJoin("categoria","c","c.id = p.categoriaId")
       .innerJoin("lote", "l", "p.id = l.id_producto")
       .innerJoin("lote_x_deposito", "ld", "ld.id_lote = l.id_lote")
-      .groupBy("IdDeposito,p.id,NombreCategoria,ld.stock")
+      .groupBy("ld.id_deposito,p.id,NombreCategoria,ld.stock")
       .getRawMany()
       await queryRunner.commitTransaction()
       console.log(result)
-      return result
+
+
+      // 🔥 Agrupamos por depósito
+      const grouped = result.reduce((acc, row) => {
+      const depositoId = row.iddeposito;
+      if (!acc[depositoId]) {
+        acc[depositoId] = {
+          idDeposito: depositoId,
+          productos: [],
+        };
+      }
+      acc[depositoId].productos.push({
+        id: row.id,
+        nombre: row.nombre,
+        descripcion: row.descripcion,
+        precio: row.precio,
+        activo: row.activo,
+        nombreCategoria: row.nombrecategoria,
+        stock: row.stock,
+      });
+      return acc;
+    }, {});
+      return grouped
 
     } catch (error) {
       await queryRunner.rollbackTransaction()

@@ -28,7 +28,7 @@ export class Producto {
 
 
     //(N,1) para lotes
-    @OneToMany(() => Lote, (lote) => lote.idProducto)
+    @OneToMany(() => Lote, (lote) => lote.idProducto,{eager:false})
     lotes: Lote[];
     
 
