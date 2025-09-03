@@ -151,13 +151,13 @@ export class ProductosService {
     await queryRunner.startTransaction();
     try {
       const result = await queryRunner.manager.createQueryBuilder(Producto,"p")
-      .select("p.id,p.nombre,p.descripcion,p.precio,p.activo,c.nombre as NombreCategoria,ld.stock,ld.id_deposito AS IdDeposito")
+      .select("p.id,p.nombre,p.descripcion,p.precio,p.activo,c.nombre as Categoria,ld.stock,ld.id_deposito AS IdDeposito")
       .innerJoin("categoria","c","c.id = p.categoriaId")
       .innerJoin("lote", "l", "p.id = l.id_producto")
       .innerJoin("lote_x_deposito", "ld", "ld.id_lote = l.id_lote")
       .where("p.id = :id",{id:id})
-      .groupBy("IdDeposito,p.id,NombreCategoria,ld.stock")
-      .getRawMany()
+      .groupBy("IdDeposito,p.id,Categoria,ld.stock")
+      .getRawOne()
       await queryRunner.commitTransaction()
       console.log(result)
       return result
