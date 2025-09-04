@@ -74,7 +74,7 @@ export class CategoriasService {
     
     
     categoria.activo=false
-    return await this.categoriaRepository.remove(categoria);
+    return await this.categoriaRepository.save(categoria);
   }
 
   
