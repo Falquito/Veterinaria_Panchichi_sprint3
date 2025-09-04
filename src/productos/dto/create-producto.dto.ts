@@ -38,10 +38,10 @@
 
 
 // dto/create-producto.dto.ts
-import { IsArray, IsNotEmpty, IsNumber, IsString, ValidateNested } from 'class-validator';
+import { IsArray, IsNotEmpty, IsNumber, IsOptional, IsString, ValidateNested } from 'class-validator';
 import { Type } from 'class-transformer';
 
-class DepositoStockDto {
+export class DepositoStockDto {
   @IsNumber()
   IdDeposito: number;
 
@@ -56,9 +56,11 @@ export class CreateProductoDto {
   @IsString()
   descripcion: string;
 
+  @Type(() => Number)
   @IsNumber()
   precio: number;
 
+  @Type(() => Number)
   @IsNumber()
   categoriaId: number;
 
@@ -68,8 +70,9 @@ export class CreateProductoDto {
   @IsString()
   fechaVencimiento: string;
 
-  @IsArray()
-  @ValidateNested({ each: true })
+  @IsOptional()
+  // @IsArray()
+  // @ValidateNested({ each: true })
   @Type(() => DepositoStockDto)
   depositos: DepositoStockDto[];
 }

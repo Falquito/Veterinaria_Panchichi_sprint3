@@ -9,7 +9,9 @@ import { LoteXDeposito } from './entities/LoteXDeposito.entity';
 
 @Module({
   imports: [ProductosModule,
-    ConfigModule.forRoot(),
+    ConfigModule.forRoot({
+      isGlobal:true
+    }),
         //configuro typeORM con un objeto de la ocnfiguracion de la conexion
         TypeOrmModule.forRoot({
           type: 'postgres',

@@ -28,7 +28,7 @@ export class ProductosService {
   private readonly depositoService:DepositosService;
   @InjectRepository(LoteXDeposito)
   private readonly lotexDepositoRepository:Repository<LoteXDeposito>;
-  async create(createProductoDto: CreateProductoDto) {
+  async create(createProductoDto: CreateProductoDto,file:Express.Multer.File) {
     const queryRunner = this.dataSource.createQueryRunner();
     await queryRunner.connect();
     await queryRunner.startTransaction();
@@ -37,7 +37,7 @@ export class ProductosService {
         createProductoDto;
       // 1. Crear categoría y producto
       const categoria = await queryRunner.manager.findOneBy(Categoria, { id: categoriaId });
-      const product = queryRunner.manager.create(Producto, { ...productDetails, categoria });
+      const product = queryRunner.manager.create(Producto, { ...productDetails, categoria,ImagenURL:file?.path });
       await queryRunner.manager.save(product);
       // 2. Crear lote
       const lote = queryRunner.manager.create(Lote, {
