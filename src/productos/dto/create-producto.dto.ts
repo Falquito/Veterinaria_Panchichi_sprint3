@@ -48,7 +48,10 @@ export class DepositoStockDto {
   @IsNumber()
   cantidad: number;
 }
-
+export class ProveedoresId {
+  @IsNumber()
+  proveedoresId:number;
+}
 export class CreateProductoDto {
   @IsString()
   nombre: string;
@@ -75,4 +78,12 @@ export class CreateProductoDto {
   // @ValidateNested({ each: true })
   @Type(() => DepositoStockDto)
   depositos: DepositoStockDto[];
+
+  @IsOptional()
+  // @IsArray()
+  // @ValidateNested({ each: true })
+  @Type(() => ProveedoresId)
+  proveedoresId: ProveedoresId[];
+
+  
 }

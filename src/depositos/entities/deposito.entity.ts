@@ -1,4 +1,4 @@
-import { LoteXDeposito } from "src/entities/LoteXDeposito.entity";
+import { Producto_Por_Deposito } from "src/entities/Producto_Por_Deposito.entity";
 import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from "typeorm";
 
 @Entity()
@@ -13,10 +13,10 @@ export class Deposito {
     @Column({type:"text"})
     direccion:string;
 
-    @OneToMany(() => LoteXDeposito,(loteXDeposito) => loteXDeposito.deposito,{ eager: true })
-    lotesDeposito:LoteXDeposito[];
 
     @Column({type:"bool"})
     activo:boolean
 
+    @OneToMany(()=>Producto_Por_Deposito,(prod_por_deposito)=>prod_por_deposito.deposito)
+    productosPorDeposito:Producto_Por_Deposito[]
 }
