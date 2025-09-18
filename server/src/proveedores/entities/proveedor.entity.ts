@@ -1,4 +1,5 @@
 // src/proveedores/entities/proveedor.entity.ts
+import { Compra } from 'src/compra/entities/compra.entity';
 import { OrdenDeCompra } from 'src/orden-de-compra/entities/orden-de-compra.entity';
 import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 
@@ -30,4 +31,8 @@ export class Proveedor {
 
   @OneToMany(() => OrdenDeCompra, orden => orden.proveedor)
   ordenes: OrdenDeCompra[];
+
+  @OneToMany(()=>Compra,(compra)=>compra.id_proveedor)
+  remitos:Compra[]
+
 }
