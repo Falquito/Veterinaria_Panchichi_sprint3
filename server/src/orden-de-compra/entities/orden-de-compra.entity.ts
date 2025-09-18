@@ -1,6 +1,7 @@
+import { Remito } from "src/compra/entities/compra.entity";
 import { OrdenDeCompraPorProducto } from "src/entities/Orden_de_compra_Por_Producto.entity";
 import { Proveedor } from "src/proveedores/entities/proveedor.entity";
-import { Column, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, ManyToOne, OneToMany, OneToOne, PrimaryGeneratedColumn } from "typeorm";
 
 @Entity()
 export class OrdenDeCompra {
@@ -18,5 +19,7 @@ export class OrdenDeCompra {
 
     @ManyToOne(() => Proveedor, proveedor => proveedor.ordenes, { eager: true })
     proveedor: Proveedor;
+    @OneToOne(()=>Remito,(remito)=>remito.ordenDeCompra)
+    remito:Remito;
 
 }
