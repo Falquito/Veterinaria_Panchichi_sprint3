@@ -6,6 +6,7 @@ import { CategoriasModule } from './categorias/categorias.module';
 import { DepositosModule } from './depositos/depositos.module';
 import { OrdenDeCompraModule } from './orden-de-compra/orden-de-compra.module';
 import { ProveedoresModule } from './proveedores/proveedores.module';
+import { RemitoModule } from './remito/remito.module';
 
 @Module({
   imports: [ProductosModule,
@@ -31,7 +32,8 @@ import { ProveedoresModule } from './proveedores/proveedores.module';
         DepositosModule,
         
         OrdenDeCompraModule,
-        ProveedoresModule
+        ProveedoresModule,
+        RemitoModule
         
   ],
   controllers: [],
