@@ -34,27 +34,44 @@ export class CompraService {
             const day = fecha.getDate();
       
             const fechaFormateada = `${year.toString().padStart(2,'0')}-${month.toString().padStart(2,'0')}-${day.toString().padStart(2,'0')}`;
-            const remito = queryRunner.manager.create(Remito,{fecha:fechaFormateada,proveedor:proveedor,ordenDeCompra:orden_de_compra});
-            
+            // const remito = queryRunner.manager.create(Remito,{fecha:fechaFormateada,proveedor:proveedor,ordenDeCompra:orden_de_compra});
+            const remito = queryRunner.manager.create(Remito, {
+              fecha: fechaFormateada,
+              proveedor:proveedor,
+              ordenDeCompra:orden_de_compra,
+            });
             console.log(remito)
+            
+            await queryRunner.manager.save(remito)
+            // remito.detalles = [];
       
-            remito.detalles = [];
+            // for (const item of createCompraDto.productos) {
+            //   const producto = await queryRunner.manager.findOneBy(Producto,{id:item.id_producto} );
       
-            for (const item of createCompraDto.productos) {
-              const producto = await queryRunner.manager.findOneBy(Producto,{id:item.id_producto} );
-      
-              const detalle_remito = queryRunner.manager.create(Remito_Por_producto,{
-                producto,
-                cantidad: item.cantidad,
-                remito:remito,
-                // ordenDeCompra: orden,
-              });
+            //   const detalle_remito = queryRunner.manager.create(Remito_Por_producto,{
+            //     producto:producto,
+            //     cantidad: item.cantidad,
+            //     remito:remito,
+            //     // ordenDeCompra: orden,
+            //   });
+
+             
               
-              remito.detalles.push(detalle_remito);
+            //   remito.detalles.push(detalle_remito);
+            // }
+
+            for (const item of createCompraDto.productos) {
+              const detalle = queryRunner.manager.create(Remito_Por_producto, {
+                cantidad: item.cantidad,
+                producto: { id: item.id_producto }, // solo referencia
+                remito: remito,
+              });
+
+              await queryRunner.manager.save(detalle);
             }
             console.log(remito)
       
-            await queryRunner.manager.save(remito);
+            // await queryRunner.manager.save(remito);
             await queryRunner.commitTransaction();
       
             return remito

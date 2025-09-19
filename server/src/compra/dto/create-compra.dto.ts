@@ -4,8 +4,7 @@ import { IsArray, IsNumber, IsString } from "class-validator";
 export class CreateCompraDto {
     @IsNumber()
     id_proveedor:number;
-    @IsString()
-    fecha:string;
+    
     @IsNumber()
     id_oc:number;
     @IsArray()
