@@ -1,0 +1,27 @@
+import type { Remito, Factura } from '../types/comprobantes';
+
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
+
+class ComprobantesService {
+    private async handleResponse<T>(response: Response): Promise<T> {
+        if (!response.ok) {
+            const errorData = await response.json().catch(() => ({}));
+            const errorMessage = errorData.message || `HTTP error! status: ${response.status}`;
+            throw new Error(errorMessage);
+        }
+        return response.json();
+    }
+
+    async getRemitos(): Promise<Remito[]> {
+        const response = await fetch(`${API_BASE_URL}/remito`);
+        return this.handleResponse<Remito[]>(response);
+    }
+
+    async getFacturas(): Promise<Factura[]> {
+        const response = await fetch(`${API_BASE_URL}/facturas`);
+        return this.handleResponse<Factura[]>(response);
+    }
+}
+
+export const comprobantesService = new ComprobantesService();
+export type { Remito, Factura };
