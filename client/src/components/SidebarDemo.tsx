@@ -4,8 +4,10 @@ import { Sidebar, SidebarBody, SidebarLink } from "../components/ui/sidebar";
 import {
   IconArrowLeft,
   IconBox,
-  IconFileInvoice ,
-  IconBuildingWarehouse ,
+  IconFileInvoice,
+  IconBuildingWarehouse,
+  IconClipboardList,
+  IconTruckDelivery, // <-- Añadido
 } from "@tabler/icons-react";
 import { motion } from "motion/react";
 import { cn } from "../lib/utils";
@@ -25,15 +27,27 @@ export function SidebarDemo() {
       icon: (
         <IconBuildingWarehouse className="h-5 w-5 shrink-0 text-neutral-700 dark:text-neutral-900" />
       ),
-
     },
-       {
+    {
+      label: "Proveedores", // <-- Añadido
+      href: "/proveedores",
+      icon: (
+          <IconTruckDelivery className="h-5 w-5 shrink-0 text-neutral-700 dark:text-neutral-900" />
+      ),
+    },
+    {
       label: "Orden De Compra",
       href: "/orden-de-compra",
       icon: (
         <IconFileInvoice className="h-5 w-5 shrink-0 text-neutral-700 dark:text-neutral-900" />
       ),
-      
+    },
+    {
+      label: "Comprobantes",
+      href: "/comprobantes",
+      icon: (
+        <IconClipboardList className="h-5 w-5 shrink-0 text-neutral-700 dark:text-neutral-900" />
+      ),
     },
     {
       label: "Logout",
@@ -41,17 +55,14 @@ export function SidebarDemo() {
       icon: (
         <IconArrowLeft className="h-5 w-5 shrink-0 text-neutral-700 dark:text-neutral-900" />
       ),
-      
     },
-    
-    
   ];
   const [open, setOpen] = useState(false);
   return (
     <div
       className={cn(
         "mx-auto flex w-full max-w-full flex-1 flex-col overflow-hidden rounded-md bg-gray-100 md:flex-row dark:bg-gray-100",
-        "h-dvh", // for your use case, use `h-screen` instead of `h-[60vh]`
+        "h-dvh",
       )}
     >
       <Sidebar open={open} setOpen={setOpen}>
@@ -71,7 +82,6 @@ export function SidebarDemo() {
                 href: "#",
                 icon: (
                   <img
-                   
                     className="h-7 w-7 shrink-0 rounded-full"
                     width={50}
                     height={50}
