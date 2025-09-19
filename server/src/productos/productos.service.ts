@@ -85,12 +85,13 @@ export class ProductosService {
         p.nombre        AS "nombreProducto",
         p.descripcion,
         p.precio,
-        p."categoriaId",
+        c.nombre        AS "nombreCategoria",
         p.fecha_vencimiento,
         pd.stock
       FROM producto p
       JOIN producto_por_deposito pd ON pd.id_prod = p.id
       JOIN deposito d ON d.id_deposito = pd.id_deposito
+      LEFT JOIN categoria c ON c.id = p."categoriaId"
       WHERE CAST(p.fecha_vencimiento AS date) > CURRENT_DATE
       ORDER BY d.id_deposito, p.id;
     `);
@@ -110,7 +111,7 @@ export class ProductosService {
                     descripcion: row.descripcion,
                     precio: row.precio,
                     stock: row.stock,
-                    categoria:row.categoriaId,
+                    nombreCategoria: row.nombreCategoria,
                     fecha_vencimiento:row.fecha_vencimiento
                 });
                 return acc;
@@ -149,7 +150,7 @@ export class ProductosService {
                     descripcion: rows[0].descripcion,
                     precio: rows[0].precio,
                     fecha_vencimiento:rows[0].fecha_vencimiento,
-                    categoria:rows[0].categoriaId,
+                    nombreCategoria: rows[0].nombreCategoria,
                     depositos: rows.map((row) => ({
                         idDeposito: row.idDeposito,
                         nombreDeposito: row.nombreDeposito,
@@ -250,6 +251,13 @@ export class ProductosService {
     await this.productRepository.save(product);
     return { message: `Producto con id ${id} eliminado correctamente` };
   }
+  async restore(id: number) {
+    const result = await this.productRepository.update({ id }, { activo: true });
+    if (!result.affected)
+      throw new NotFoundException(`Producto ${id} no encontrado`);
+    return { message: `Producto ${id} restaurado` };
+  }
+
   private handleDbExceptions (error:any){
     console.log(error);
             if (error.code === '42703') {
