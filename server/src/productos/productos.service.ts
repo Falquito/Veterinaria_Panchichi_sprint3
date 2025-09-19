@@ -85,10 +85,13 @@ export class ProductosService {
         p.nombre        AS "nombreProducto",
         p.descripcion,
         p.precio,
+        p."categoriaId",
+        p.fecha_vencimiento,
         pd.stock
       FROM producto p
       JOIN producto_por_deposito pd ON pd.id_prod = p.id
       JOIN deposito d ON d.id_deposito = pd.id_deposito
+      WHERE CAST(p.fecha_vencimiento AS date) > CURRENT_DATE
       ORDER BY d.id_deposito, p.id;
     `);
             const result = rows.reduce((acc, row) => {
@@ -107,6 +110,8 @@ export class ProductosService {
                     descripcion: row.descripcion,
                     precio: row.precio,
                     stock: row.stock,
+                    categoria:row.categoriaId,
+                    fecha_vencimiento:row.fecha_vencimiento
                 });
                 return acc;
             }, []);
@@ -127,11 +132,13 @@ export class ProductosService {
             p.precio,
             d.id_deposito   AS "idDeposito",
             d.nombre        AS "nombreDeposito",
-            pd.stock
+            pd.stock,
+            p.categoriaId,
+            p.fecha_vencimiento
           FROM producto p
           JOIN producto_por_deposito pd ON pd.id_prod = p.id
           JOIN deposito d ON d.id_deposito = pd.id_deposito
-          WHERE p.id = $1;
+          WHERE p.id = $1 AND CAST(p.fecha_vencimiento AS date) > CURRENT_DATE;
           `, [id]);
                 if (rows.length === 0) {
                     bandera = true;
@@ -141,6 +148,8 @@ export class ProductosService {
                     nombre: rows[0].nombreProducto,
                     descripcion: rows[0].descripcion,
                     precio: rows[0].precio,
+                    fecha_vencimiento:rows[0].fecha_vencimiento,
+                    categoria:rows[0].categoriaId,
                     depositos: rows.map((row) => ({
                         idDeposito: row.idDeposito,
                         nombreDeposito: row.nombreDeposito,
