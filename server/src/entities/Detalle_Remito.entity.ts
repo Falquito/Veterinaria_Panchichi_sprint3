@@ -10,7 +10,7 @@ export class Remito_Por_producto{
     @ManyToOne(()=>Remito,(compra)=>compra.detalles)
     remito:Remito;
 
-    @ManyToOne(()=>Producto,(producto)=>producto.remitos)
+    @ManyToOne(()=>Producto,(producto)=>producto.remitos,{eager:true})
     producto:Producto;
 
     @Column({type:"int"})
