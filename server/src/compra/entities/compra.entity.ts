@@ -20,6 +20,6 @@ export class Remito {
     fecha:string;
 
 
-    @OneToMany(()=>Remito_Por_producto,(detalle_remito)=>detalle_remito.remito,{cascade:true})
+    @OneToMany(()=>Remito_Por_producto,(detalle_remito)=>detalle_remito.remito,{cascade:true,eager:true})
     detalles:Remito_Por_producto[]
 }

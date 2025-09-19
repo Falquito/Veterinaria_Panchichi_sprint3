@@ -1,8 +1,8 @@
 import { Injectable, InternalServerErrorException, Logger } from '@nestjs/common';
 import { CreateCompraDto } from './dto/create-compra.dto';
 import { UpdateCompraDto } from './dto/update-compra.dto';
-import { InjectDataSource } from '@nestjs/typeorm';
-import { DataSource } from 'typeorm';
+import { InjectDataSource, InjectRepository } from '@nestjs/typeorm';
+import { DataSource, Repository } from 'typeorm';
 import { Proveedor } from 'src/proveedores/entities/proveedor.entity';
 import { Remito } from './entities/compra.entity';
 import { OrdenDeCompra } from 'src/orden-de-compra/entities/orden-de-compra.entity';
@@ -15,6 +15,9 @@ export class CompraService {
   @InjectDataSource()
   private readonly dataSource:DataSource
   private readonly logger = new Logger('CompraService')
+
+  @InjectRepository(Remito)
+  private readonly remitoRepository:Repository<Remito>
   async create(createCompraDto: CreateCompraDto) {
     const queryRunner =  this.dataSource.createQueryRunner()
     try {
@@ -85,21 +88,16 @@ export class CompraService {
     }
   }
 
-  findAll() {
-    return `This action returns all compra`;
+  async findAll() {
+    try {
+      const remitos = await this.remitoRepository.find()
+
+      return remitos;
+    } catch (error) {
+      
+    }
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} compra`;
-  }
-
-  update(id: number, updateCompraDto: UpdateCompraDto) {
-    return `This action updates a #${id} compra`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} compra`;
-  }
 
   private handleDbExceptions (error:any){
         console.log(error);
