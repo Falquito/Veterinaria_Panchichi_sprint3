@@ -21,9 +21,17 @@ Veterinaria_Panchichi/
 ├── client/ # Frontend (si aplica)
 ├── server/ # Backend con NestJS
 │ ├── src/
-│ │ ├── modules/ # Módulos y controladores
+│ │ ├── categorias #Cada uno con sus dto,entities,controladores, servicios y modulos
+│ │ ├── compra
+│ │ ├── depositos
+│ │ ├── facturas
+│ │ ├── movimientos
+│ │ ├── orden-de-compra
+│ │ ├── productos
+│ │ ├── proveedores
+│ │ ├── providers
 │ │ ├── entities/ # Entidades TypeORM
-│ │ ├── dtos/ # Data Transfer Objects
+│ │ ├── app.module.ts
 │ │ └── main.ts
 │ ├── .env # Variables de entorno
 │ └── ...
