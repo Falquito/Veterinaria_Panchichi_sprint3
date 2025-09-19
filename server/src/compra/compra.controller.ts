@@ -17,18 +17,5 @@ export class CompraController {
     return this.compraService.findAll();
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.compraService.findOne(+id);
-  }
 
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateCompraDto: UpdateCompraDto) {
-    return this.compraService.update(+id, updateCompraDto);
-  }
-
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.compraService.remove(+id);
-  }
 }
