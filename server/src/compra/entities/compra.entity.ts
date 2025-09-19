@@ -1,4 +1,5 @@
 import { Remito_Por_producto } from "src/entities/Detalle_Remito.entity";
+import { Factura } from "src/facturas/entities/factura.entity";
 import { OrdenDeCompra } from "src/orden-de-compra/entities/orden-de-compra.entity";
 import { Proveedor } from "src/proveedores/entities/proveedor.entity";
 import { Column, Entity, JoinColumn, ManyToMany, ManyToOne, OneToMany, OneToOne, PrimaryGeneratedColumn } from "typeorm";
@@ -22,4 +23,7 @@ export class Remito {
 
     @OneToMany(()=>Remito_Por_producto,(detalle_remito)=>detalle_remito.remito,{cascade:true,eager:true})
     detalles:Remito_Por_producto[]
+
+    @OneToOne(()=>Factura,(factura)=>factura.remito)
+    factura:Factura;
 }

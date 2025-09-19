@@ -7,6 +7,7 @@ import { DepositosModule } from './depositos/depositos.module';
 import { OrdenDeCompraModule } from './orden-de-compra/orden-de-compra.module';
 import { ProveedoresModule } from './proveedores/proveedores.module';
 import { CompraModule } from './compra/compra.module';
+import { FacturasModule } from './facturas/facturas.module';
 
 @Module({
   imports: [ProductosModule,
@@ -34,7 +35,8 @@ import { CompraModule } from './compra/compra.module';
         OrdenDeCompraModule,
         ProveedoresModule,
         
-        CompraModule
+        CompraModule,
+        FacturasModule
         
   ],
   controllers: [],
