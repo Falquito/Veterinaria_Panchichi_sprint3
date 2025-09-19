@@ -12,6 +12,9 @@ async function bootstrap() {
       transform:true
     })
   )
+   const movimientosRouter = require('./movimientos/movimientos.routes.js');
+  app.use('/api/movimientos', movimientosRouter);
+
   await app.listen(process.env.PORT ?? 3000);
 }
 bootstrap();
