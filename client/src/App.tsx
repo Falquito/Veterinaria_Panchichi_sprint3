@@ -2,9 +2,10 @@ import { Layout } from "./components/Layout"
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom"
 import Products from "./pages/Product"
 import Depositos from "./pages/Depot"
-import MovimientosFrontend from "./pages/Movimientos.jsx"
 import OrdenDeCompraGenerator from "./pages/OrdenDeCompra.js"
 import Movimientos from "./pages/movimientos.jsx"
+import Comprobantes from "./pages/Comprobantes"
+import Proveedores from "./pages/Proveedores" // <-- Añadido
 
 function App() {
 
@@ -18,6 +19,8 @@ function App() {
             <Route path="depositos" element={<Depositos />} />
             <Route path="movimientos" element={<Movimientos/>} />
             <Route path="orden-de-compra" element={<OrdenDeCompraGenerator/>} />
+            <Route path="comprobantes" element={<Comprobantes />} />
+            <Route path="proveedores" element={<Proveedores />} /> {/* <-- Añadido */}
           </Route>
         </Routes>
       </BrowserRouter>
