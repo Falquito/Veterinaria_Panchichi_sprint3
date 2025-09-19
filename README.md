@@ -16,7 +16,7 @@ Permite administrar productos, proveedores, depósitos, órdenes de compra y rem
 ---
 
 ## 📁 Estructura del proyecto
-
+```bash
 Veterinaria_Panchichi/
 ├── client/ # Frontend (si aplica)
 ├── server/ # Backend con NestJS
@@ -29,7 +29,7 @@ Veterinaria_Panchichi/
 │ └── ...
 ├── .gitignore
 └── README.md
-
+```
 
 ---
 
