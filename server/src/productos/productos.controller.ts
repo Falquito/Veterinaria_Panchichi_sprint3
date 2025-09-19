@@ -88,4 +88,9 @@ export class ProductosController {
   remove(@Param('id') id: string) {
     return this.productosService.remove(+id);
   }
+
+  @Patch(':id/restore')
+  restore(@Param('id') id: string) {
+    return this.productosService.restore(+id);
+  }
 }
