@@ -3,7 +3,7 @@ import { CompraService } from './compra.service';
 import { CreateCompraDto } from './dto/create-compra.dto';
 import { UpdateCompraDto } from './dto/update-compra.dto';
 
-@Controller('compra')
+@Controller('remito')
 export class CompraController {
   constructor(private readonly compraService: CompraService) {}
 
