@@ -8,6 +8,8 @@ import { OrdenDeCompraModule } from './orden-de-compra/orden-de-compra.module';
 import { ProveedoresModule } from './proveedores/proveedores.module';
 import { CompraModule } from './compra/compra.module';
 import { FacturasModule } from './facturas/facturas.module';
+import { ComprobanteModule } from './comprobante/comprobante.module';
+import { MovimientosModule } from './movimientos/movimientos/movimientos.module';
 
 @Module({
   imports: [ProductosModule,
@@ -36,7 +38,9 @@ import { FacturasModule } from './facturas/facturas.module';
         ProveedoresModule,
         
         CompraModule,
-        FacturasModule
+        FacturasModule,
+        ComprobanteModule,
+        MovimientosModule
         
   ],
   controllers: [],

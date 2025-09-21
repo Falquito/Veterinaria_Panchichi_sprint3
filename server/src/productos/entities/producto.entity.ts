@@ -1,5 +1,6 @@
 import { Categoria } from "src/categorias/entities/categoria.entity";
 import { Remito_Por_producto } from "src/entities/Detalle_Remito.entity";
+import { DetalleComprobante } from "src/entities/DetalleComprobante.entity";
 import { Movimientos_Por_Producto } from "src/entities/Movimientos_Por_Producto.entity";
 import { OrdenDeCompraPorProducto } from "src/entities/Orden_de_compra_Por_Producto.entity";
 import { Producto_Por_Deposito } from "src/entities/Producto_Por_Deposito.entity";
@@ -51,6 +52,10 @@ export class Producto {
 
     @OneToMany(()=>Remito_Por_producto,(remito_por_producto)=>remito_por_producto.producto)
     remitos:Remito_Por_producto[]
+
+    @OneToMany(()=>DetalleComprobante,(detalleComprobante)=>detalleComprobante.producto)
+    detalleComprobante:DetalleComprobante[]
+
 
     
 }
