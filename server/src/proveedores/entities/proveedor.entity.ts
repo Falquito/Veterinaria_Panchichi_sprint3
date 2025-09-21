@@ -1,5 +1,6 @@
 // src/proveedores/entities/proveedor.entity.ts
 import { Remito } from 'src/compra/entities/compra.entity';
+import { Comprobante } from 'src/comprobante/entities/comprobante.entity';
 import { OrdenDeCompra } from 'src/orden-de-compra/entities/orden-de-compra.entity';
 import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 
@@ -34,5 +35,11 @@ export class Proveedor {
 
   @OneToMany(()=>Remito,(remito)=>remito.id_proveedor)
   remitos:Remito[]
+
+
+  @OneToMany(()=>Comprobante,(comprobante)=>comprobante.proveedor)
+  comprobante:Comprobante[];
+
+  
 
 }

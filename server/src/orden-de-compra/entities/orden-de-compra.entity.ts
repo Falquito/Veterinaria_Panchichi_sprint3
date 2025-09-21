@@ -1,4 +1,5 @@
 import { Remito } from "src/compra/entities/compra.entity";
+import { Comprobante } from "src/comprobante/entities/comprobante.entity";
 import { OrdenDeCompraPorProducto } from "src/entities/Orden_de_compra_Por_Producto.entity";
 import { Proveedor } from "src/proveedores/entities/proveedor.entity";
 import { Column, Entity, ManyToOne, OneToMany, OneToOne, PrimaryGeneratedColumn } from "typeorm";
@@ -22,4 +23,6 @@ export class OrdenDeCompra {
     @OneToOne(()=>Remito,(remito)=>remito.ordenDeCompra)
     remito:Remito;
 
+    @OneToOne(()=>Comprobante,(comprobante)=>comprobante.ordenDeCompra)
+    comprobante:Comprobante;
 }
