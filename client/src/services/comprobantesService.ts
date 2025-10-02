@@ -21,6 +21,15 @@ class ComprobantesService {
         const response = await fetch(`${API_BASE_URL}/facturas`);
         return this.handleResponse<Factura[]>(response);
     }
+    
+    async confirmarRemito(remitoId: number, depositoId: number): Promise<Remito> {
+        const response = await fetch(`${API_BASE_URL}/remito/${remitoId}/recibir`, {
+            method: 'PATCH',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ depositoId }),
+        });
+        return this.handleResponse<Remito>(response);
+    }
 }
 
 export const comprobantesService = new ComprobantesService();
