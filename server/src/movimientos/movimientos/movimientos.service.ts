@@ -18,7 +18,6 @@ export class MovimientosService {
         const {tipo,observaciones,motivo,fecha,detalle}= createMovimientoDto
         const queryRunner = this.dataSource.createQueryRunner()
         try {
-
             await queryRunner.connect()
             await queryRunner.startTransaction()
 
