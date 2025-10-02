@@ -10,6 +10,7 @@ import { CompraModule } from './compra/compra.module';
 import { FacturasModule } from './facturas/facturas.module';
 import { ComprobanteModule } from './comprobante/comprobante.module';
 import { MovimientosModule } from './movimientos/movimientos/movimientos.module';
+import { OrdenDePagoModule } from './orden-de-pago/orden-de-pago.module';
 
 @Module({
   imports: [ProductosModule,
@@ -40,7 +41,8 @@ import { MovimientosModule } from './movimientos/movimientos/movimientos.module'
         CompraModule,
         FacturasModule,
         ComprobanteModule,
-        MovimientosModule
+        MovimientosModule,
+        OrdenDePagoModule
         
   ],
   controllers: [],
