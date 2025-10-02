@@ -3,7 +3,7 @@ import { CompraService } from './compra.service';
 import { CreateCompraDto } from './dto/create-compra.dto';
 import { UpdateCompraDto } from './dto/update-compra.dto';
 
-@Controller('compra')
+@Controller('remito')
 export class CompraController {
   constructor(private readonly compraService: CompraService) {}
 
@@ -17,18 +17,10 @@ export class CompraController {
     return this.compraService.findAll();
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.compraService.findOne(+id);
+  @Patch(':id/recibir') // Nueva ruta
+  confirmarRecepcion(@Param('id') id: string, @Body() body: { depositoId: number }) {
+    return this.compraService.confirmarRecepcion(+id, body.depositoId);
   }
 
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateCompraDto: UpdateCompraDto) {
-    return this.compraService.update(+id, updateCompraDto);
-  }
 
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.compraService.remove(+id);
-  }
 }

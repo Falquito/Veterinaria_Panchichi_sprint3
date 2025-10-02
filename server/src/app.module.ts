@@ -4,10 +4,11 @@ import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { CategoriasModule } from './categorias/categorias.module';
 import { DepositosModule } from './depositos/depositos.module';
-import { OrdenDeCompraModule } from './orden-de-compra/orden-de-compra.module';
 import { ProveedoresModule } from './proveedores/proveedores.module';
-import { RemitoModule } from './remito/remito.module';
+import { OrdenDeCompraModule } from './orden-de-compra/orden-de-compra.module';
 import { CompraModule } from './compra/compra.module';
+import { FacturasModule } from './facturas/facturas.module';
+import { RemitoModule } from './remito/remito.module';
 
 @Module({
   imports: [ProductosModule,
@@ -23,19 +24,19 @@ import { CompraModule } from './compra/compra.module';
             rejectUnauthorized:false
           },
           autoLoadEntities:true,//carga automaticamente las entidades
-          synchronize:true, //los cambios en las tablas se sincronizan
+          synchronize:false, //los cambios en las tablas se sincronizan
           entities:[
             __dirname + '/**/*.entity{.ts,.js}'
           ]
         }),
         CategoriasModule,
-        
-        DepositosModule,
-        
-        OrdenDeCompraModule,
         ProveedoresModule,
-        RemitoModule,
-        CompraModule
+        DepositosModule,
+        OrdenDeCompraModule,
+         CompraModule,
+        FacturasModule,
+        RemitoModule
+        
         
   ],
   controllers: [],
