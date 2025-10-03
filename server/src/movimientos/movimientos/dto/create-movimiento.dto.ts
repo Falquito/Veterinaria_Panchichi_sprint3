@@ -7,9 +7,6 @@ export class CreateMovimientoDto{
     tipo:string;
 
     @IsString()
-    fecha:string;
-
-    @IsString()
     motivo:string;
 
     @IsString()
