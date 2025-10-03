@@ -26,7 +26,7 @@ import { OrdenDePagoModule } from './orden-de-pago/orden-de-pago.module';
             rejectUnauthorized:false
           },
           autoLoadEntities:true,//carga automaticamente las entidades
-          synchronize:true, //los cambios en las tablas se sincronizan
+          synchronize:false, //los cambios en las tablas se sincronizan
           entities:[
             __dirname + '/**/*.entity{.ts,.js}'
           ]
