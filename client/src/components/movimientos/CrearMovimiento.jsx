@@ -1,24 +1,34 @@
 "use client";
-import React, { useState } from "react";
+import React, { useMemo, useState } from "react";
 import { Plus, AlertCircle, Package, Trash2, Check } from "lucide-react";
-import { Modal, ModalBody, ModalContent, useModal } from "../ui/animated-modal"; // ajustá ruta
-import ProductoSelectorModal from "./ProductoSelectorModal";   // ⬅️ NUEVO
-import DepositoSelectorModal from "./DepositoSelectorModal";   // ⬅️ NUEVO
+import { Modal, ModalBody, ModalContent, useModal } from "../ui/animated-modal";
+import ProductoSelectorModal from "./ProductoSelectorModal"; 
+import DepositoSelectorModal from "./DepositoSelectorModal";  
 
 export default function CrearMovimiento({ onSuccess }) {
   const { setOpen } = useModal(); // este es el modal "padre" del formulario
-  const [loading, setLoading] = useState(false);
-  const [error, setError]     = useState(null);
-  const [success, setSuccess] = useState(false);
+  const [loading, setLoading]   = useState(false);
+  const [error, setError]       = useState(null);
+  const [success, setSuccess]   = useState(false);
 
   const [currentLineIndex, setCurrentLineIndex] = useState(null);
   const [formData, setFormData] = useState({
     tipo: "INS",
-    fecha: new Date().toISOString().slice(0, 16),
     motivo: "",
     observaciones: "",
     detalle: [],
   });
+
+  const fechaPreview = useMemo(() => {
+    try {
+      return new Date().toLocaleString("es-AR", {
+        dateStyle: "medium",
+        timeStyle: "short",
+      });
+    } catch {
+      return "";
+    }
+  }, []);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -73,7 +83,7 @@ export default function CrearMovimiento({ onSuccess }) {
   };
 
   const validateForm = () => {
-    if (!formData.tipo || !formData.fecha || !formData.motivo) return "Completa los campos obligatorios";
+    if (!formData.tipo || !formData.motivo) return "Completa los campos obligatorios";
     if (!formData.detalle.length) return "Agregá al menos una línea";
     for (let i = 0; i < formData.detalle.length; i++) {
       const l = formData.detalle[i];
@@ -93,7 +103,6 @@ export default function CrearMovimiento({ onSuccess }) {
     try {
       const payload = {
         tipo: formData.tipo,
-        fecha: formData.fecha,
         motivo: formData.motivo,
         observaciones: formData.observaciones,
         detalle: formData.detalle.map((d) => ({
@@ -103,6 +112,7 @@ export default function CrearMovimiento({ onSuccess }) {
         })),
       };
 
+      // La fecha NO viaja: la pone el backend
       const res = await fetch("http://localhost:3000/api/v2/movimientos", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -180,15 +190,21 @@ export default function CrearMovimiento({ onSuccess }) {
                   </select>
                 </div>
 
+                {/* Reemplazo del input de fecha: bloque visual consistente */}
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Fecha *</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Fecha (automática)
+                  </label>
                   <input
-                    type="datetime-local"
-                    name="fecha"
-                    value={formData.fecha}
-                    onChange={handleInputChange}
-                    className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    type="text"
+                    value={fechaPreview}
+                    disabled
+                    className="w-full px-4 py-2.5 border border-gray-300 rounded-lg bg-gray-50 text-gray-500 cursor-not-allowed"
+                    title="La fecha se establecerá automáticamente en el servidor al guardar"
                   />
+                  <p className="mt-1 text-xs text-gray-500">
+                    La fecha y hora se guardarán automáticamente en el servidor.
+                  </p>
                 </div>
 
                 <div className="md:col-span-2">
@@ -379,6 +395,8 @@ export default function CrearMovimiento({ onSuccess }) {
     </>
   );
 }
+
+/* ---------- Botones que abren los modales anidados ---------- */
 
 function ProductoPickButton({ linea, onClickOpen }) {
   const { setOpen } = useModal(); // provider del Modal más cercano

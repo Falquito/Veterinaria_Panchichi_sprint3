@@ -56,9 +56,7 @@ export default function MovimientoDetalleContent({ movimientoId }) {
             <p className="text-sm text-gray-600">Detalle completo del movimiento</p>
           </div>
         </div>
-        <button onClick={() => setOpen(false)} className="p-2 hover:bg-gray-100 rounded-lg transition-colors">
-          <X className="w-5 h-5 text-gray-500" />
-        </button>
+        
       </div>
 
       {/* Content */}
@@ -174,12 +172,7 @@ export default function MovimientoDetalleContent({ movimientoId }) {
         ) : null}
       </div>
 
-      {/* Footer */}
-      <div className="border-t border-gray-200 p-6">
-        <button onClick={() => setOpen(false)} className="w-full px-6 py-3 bg-gray-100 hover:bg-gray-200 text-gray-800 font-medium rounded-lg transition-colors">
-          Cerrar
-        </button>
-      </div>
+    
     </div>
   );
 }

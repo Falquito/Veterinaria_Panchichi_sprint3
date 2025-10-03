@@ -1,7 +1,7 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import { Package, Search, X, Check } from "lucide-react";
-import { useModal } from "../ui/animated-modal"; // ajustá la ruta si cambia
+import { useModal } from "../ui/animated-modal"; 
 
 export default function ProductoSelectorModal({ onSelect, selectedProductoId }) {
   const { setOpen } = useModal();
@@ -51,7 +51,7 @@ export default function ProductoSelectorModal({ onSelect, selectedProductoId }) 
   return (
     <div className="max-w-2xl w-full max-h-[80vh] flex flex-col bg-white rounded-lg">
       {/* Header */}
-      <div className="flex items-center justify-between p-6 border-b">
+      <div className="flex items-center justify-between p-6 ">
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
             <Package className="w-5 h-5 text-blue-600" />
@@ -61,13 +61,11 @@ export default function ProductoSelectorModal({ onSelect, selectedProductoId }) 
             <p className="text-sm text-gray-600">{productosFiltrados.length} productos disponibles</p>
           </div>
         </div>
-        <button onClick={() => setOpen(false)} className="p-2 hover:bg-gray-100 rounded-lg">
-          <X className="w-5 h-5 text-gray-500" />
-        </button>
+       
       </div>
 
       {/* Search */}
-      <div className="p-4 border-b">
+      <div className="p-4 border border-b-gray-200 border-transparent ">
         <div className="relative">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
           <input

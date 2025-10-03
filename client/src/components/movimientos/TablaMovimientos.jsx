@@ -1,9 +1,7 @@
 "use client";
 import React from "react";
 import { Eye, Package } from "lucide-react";
-import { useModal } from "../ui/animated-modal"; // ajustá la ruta si cambia
-
-// Recibe: movimientos (ya filtrados), onSelect(id), y helpers de formato/estilo
+import { useModal } from "../ui/animated-modal"; 
 export default function TablaMovimientos({
   movimientos,
   onSelect,
@@ -15,8 +13,8 @@ export default function TablaMovimientos({
   const { setOpen } = useModal();
 
   const abrirDetalle = (id) => {
-    onSelect(id);   // setear el movimiento seleccionado en el padre
-    setOpen(true);  // abrir el modal de detalle (proveído por <Modal>)
+    onSelect(id);   
+    setOpen(true); 
   };
 
   return (

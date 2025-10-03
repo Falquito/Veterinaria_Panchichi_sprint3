@@ -1,7 +1,7 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import { Warehouse, Search, X, Check } from "lucide-react";
-import { useModal } from "../ui/animated-modal"; // ajustá la ruta si cambia
+import { useModal } from "../ui/animated-modal"; 
 
 export default function DepositoSelectorModal({ onSelect, selectedDepositoId }) {
   const { setOpen } = useModal();
@@ -36,7 +36,7 @@ export default function DepositoSelectorModal({ onSelect, selectedDepositoId }) 
   return (
     <div className="max-w-2xl w-full max-h-[80vh] flex flex-col bg-white rounded-lg">
       {/* Header */}
-      <div className="flex items-center justify-between p-6 border-b">
+      <div className="flex items-center justify-between p-6  ">
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 bg-orange-100 rounded-lg flex items-center justify-center">
             <Warehouse className="w-5 h-5 text-orange-600" />
@@ -46,13 +46,11 @@ export default function DepositoSelectorModal({ onSelect, selectedDepositoId }) 
             <p className="text-sm text-gray-600">{depositosFiltrados.length} depósitos disponibles</p>
           </div>
         </div>
-        <button onClick={() => setOpen(false)} className="p-2 hover:bg-gray-100 rounded-lg">
-          <X className="w-5 h-5 text-gray-500" />
-        </button>
+      
       </div>
 
       {/* Search */}
-      <div className="p-4 border-b">
+      <div className="p-4 border border-b-gray-200 border-transparent">
         <div className="relative">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
           <input
