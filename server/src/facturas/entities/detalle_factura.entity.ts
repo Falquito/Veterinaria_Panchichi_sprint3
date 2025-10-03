@@ -1,6 +1,7 @@
-import { Entity, PrimaryGeneratedColumn, ManyToOne, Column, OneToOne } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, ManyToOne, Column, OneToOne, OneToMany } from 'typeorm';
 import { Factura } from './factura.entity';
 import { Producto } from 'src/productos/entities/producto.entity';
+import { DetalleOrdenDePago } from 'src/entities/detalle-orden-de-pago.entity';
 
 @Entity('facturas_detalles')
 export class DetalleFactura {
@@ -12,6 +13,9 @@ export class DetalleFactura {
 
   @ManyToOne(() => Producto, { eager: true })
   producto: Producto;
+
+  @OneToMany(() => DetalleOrdenDePago, (detalle) => detalle.factura)
+  ordenesDePagoDetalles: DetalleOrdenDePago[];
 
   @Column({ type: 'int' })
   cantidad: number;
@@ -25,6 +29,8 @@ export class DetalleFactura {
 
   @Column({ type: 'float', default: 0 })
   subtotal: number;
+
+  
 
 
 }

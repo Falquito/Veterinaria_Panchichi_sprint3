@@ -8,7 +8,8 @@ import {
   IconBuildingWarehouse,
   IconClipboardList,
   IconTruckDelivery, // <-- Añadido
-  IconHistory
+  IconHistory,
+  IconCreditCard
 } from "@tabler/icons-react";
 import { motion } from "motion/react";
 import { cn } from "../lib/utils";
@@ -57,6 +58,13 @@ export function SidebarDemo() {
         <IconClipboardList className="h-5 w-5 shrink-0 text-neutral-700 dark:text-neutral-900" />
       ),
     },
+    { // <-- Añadir nuevo objeto de enlace
+  label: "Órdenes de Pago",
+  href: "/orden-de-pago",
+  icon: (
+    <IconCreditCard className="h-5 w-5 shrink-0 text-neutral-700 dark:text-neutral-900" />
+  ),
+},
     {
       label: "Logout",
       href: "#",

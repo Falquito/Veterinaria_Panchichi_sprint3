@@ -1,5 +1,5 @@
 // src/proveedores/proveedores.controller.ts
-import { Controller, Get, Post, Body, Patch, Param, Delete, Query } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Query, ParseIntPipe } from '@nestjs/common';
 import { ProveedoresService } from './proveedores.service';
 import { CreateProveedorDto } from './dto/create-proveedor.dto';
 import { UpdateProveedorDto } from './dto/update-proveedor.dto';
@@ -31,19 +31,17 @@ export class ProveedoresController {
 
   // GET 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.proveedoresService.findOne(+id);
+  findOne(@Param('id', ParseIntPipe) id: number) {
+    return this.proveedoresService.findOne(id);
   }
 
-  // PATCH 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() dto: UpdateProveedorDto) {
-    return this.proveedoresService.update(+id, dto);
+  update(@Param('id', ParseIntPipe) id: number, @Body() dto: UpdateProveedorDto) {
+    return this.proveedoresService.update(id, dto);
   }
 
-  // DELETE 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.proveedoresService.remove(+id);
+  remove(@Param('id', ParseIntPipe) id: number) {
+    return this.proveedoresService.remove(id);
   }
 }
