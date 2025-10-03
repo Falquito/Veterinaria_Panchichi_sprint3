@@ -11,85 +11,96 @@ import { Producto_Por_Deposito } from 'src/entities/Producto_Por_Deposito.entity
 @Injectable()
 export class MovimientosService {
 
-    @InjectDataSource()
-    private readonly dataSource:DataSource;
+  @InjectDataSource()
+  private readonly dataSource: DataSource;
 
-    async create (createMovimientoDto:CreateMovimientoDto){
-        const {tipo,observaciones,motivo,detalle}= createMovimientoDto
-        const queryRunner = this.dataSource.createQueryRunner()
-        const fecha = new Date();
+  async create(createMovimientoDto: CreateMovimientoDto) {
+    const { tipo, observaciones, motivo, detalle } = createMovimientoDto
+    const queryRunner = this.dataSource.createQueryRunner()
+    const fecha = new Date();
 
-      const year = fecha.getFullYear() % 100; // últimos 2 dígitos
-      const month = fecha.getMonth() + 1; // los meses van de 0 a 11
-      const day = fecha.getDate();
+    const f = new Date();
+    const dd = f.getDate();
+    const mm = f.getMonth() + 1;
+    const yyyy = f.getFullYear();
+    const fechaFormateada = `${dd}/${mm}/${yyyy}`;
+    try {
+      await queryRunner.connect()
+      await queryRunner.startTransaction()
 
-      const fechaFormateada = `${year.toString().padStart(2,'0')}-${month.toString().padStart(2,'0')}-${day.toString().padStart(2,'0')}`;
-        try {
-            await queryRunner.connect()
-            await queryRunner.startTransaction()
+      const movimiento = queryRunner.manager.create(Movimientos, {
+        fecha: fechaFormateada,
+        tipo: tipo,
+        motivo: motivo,
+        observaciones: observaciones
+      })
+      await queryRunner.manager.save(movimiento)
+      console.log(movimiento)
+      for (const item of detalle) {
+        const { cantidad, idDeposito, idProducto } = item;
 
-            const movimiento = queryRunner.manager.create(Movimientos,{
-                fecha:fechaFormateada,
-                tipo:tipo,
-                motivo:motivo,
-                observaciones:observaciones
-            })
-            await queryRunner.manager.save(movimiento)
-            console.log(movimiento)
-            for (const item of detalle){
-                const {cantidad,idDeposito,idProducto} = item
-                const producto = await queryRunner.manager.findOneBy(Producto,{id:idProducto})
-                const detalle_movimiento = queryRunner.manager.create(Movimientos_Por_Producto,{
-                    productos:producto,
-                    cantidad:cantidad,
-                    id_deposito:idDeposito,
-                    movimientos:movimiento
-                })
-                console.log(detalle_movimiento)
-                await queryRunner.manager.save(detalle_movimiento)
+        const producto = await queryRunner.manager.findOneBy(Producto, { id: idProducto });
 
-                const { total } = await queryRunner.manager.createQueryBuilder(Movimientos_Por_Producto, "mp")
-                .select("sum(cantidad)", "total")
-                .innerJoin(Movimientos, "m", "m.id = mp.movimientosId")
-                .where("m.tipo = :tipo", { tipo: "UPD" })
-                .andWhere("mp.productosId = :productoId", { productoId: idProducto })
-                .andWhere("mp.id_deposito = :idDeposito", { idDeposito: idDeposito })
-                .getRawOne();
-                const { totall } = await queryRunner.manager.createQueryBuilder(Movimientos_Por_Producto, "mp")
-                .select("sum(cantidad)", "totall")
-                .innerJoin(Movimientos, "m", "m.id = mp.movimientosId")
-                .where("m.tipo = :tipo", { tipo: "INS" })
-                .andWhere("mp.productosId = :productosId", { productosId: idProducto })
-                .andWhere("mp.id_deposito = id_deposito", { id_deposito: idDeposito })
-                .getRawOne();
-                console.log(total, totall);
-                const depId = await queryRunner.manager.findOneBy(Deposito, { id_deposito: idDeposito });
-                const productId = await queryRunner.manager.findOneBy(Producto, { id: idProducto });
-                let prodPorDeposito = await queryRunner.manager.findOne(Producto_Por_Deposito, {
-                    where: {
-                            producto: { id:idProducto },
-                            deposito: { id_deposito: idDeposito},
-                            },
-                });
-                const prod_por_depositoUpdated = await queryRunner.manager.preload(Producto_Por_Deposito, {
-                        id: prodPorDeposito.id,
-                        deposito: depId,
-                        stock: +totall + parseInt(total),
-                        producto: productId
-                });
-                await queryRunner.manager.save(prod_por_depositoUpdated);
-            }
+        const detalle_movimiento = queryRunner.manager.create(Movimientos_Por_Producto, {
+          productos: producto,
+          cantidad,
+          id_deposito: idDeposito,
+          movimientos: movimiento,
+        });
+        await queryRunner.manager.save(detalle_movimiento);
 
-            
+        const { total_upd } = await queryRunner.manager
+          .createQueryBuilder(Movimientos_Por_Producto, "mp")
+          .select("COALESCE(SUM(mp.cantidad), 0)", "total_upd")
+          .innerJoin(Movimientos, "m", "m.id = mp.movimientosId")
+          .where("m.tipo = :tipo", { tipo: "UPD" })
+          .andWhere("mp.productosId = :productoId", { productoId: idProducto })
+          .andWhere("mp.id_deposito = :idDeposito", { idDeposito })
+          .getRawOne();
 
-            await queryRunner.commitTransaction()
-            
-        } catch (error) {
-            await queryRunner.rollbackTransaction() 
-            throw new InternalServerErrorException(error)
-        }finally{
-            await queryRunner.release()
+        const { total_ins } = await queryRunner.manager
+          .createQueryBuilder(Movimientos_Por_Producto, "mp")
+          .select("COALESCE(SUM(mp.cantidad), 0)", "total_ins")
+          .innerJoin(Movimientos, "m", "m.id = mp.movimientosId")
+          .where("m.tipo = :tipo", { tipo: "INS" })
+          .andWhere("mp.productosId = :productoId", { productoId: idProducto })
+          .andWhere("mp.id_deposito = :idDeposito", { idDeposito })
+          .getRawOne();
+
+
+        const nuevoStock = Number(total_ins) + Number(total_upd);
+
+        const dep = await queryRunner.manager.findOneBy(Deposito, { id_deposito: idDeposito });
+        const prod = await queryRunner.manager.findOneBy(Producto, { id: idProducto });
+
+        let ppd = await queryRunner.manager.findOne(Producto_Por_Deposito, {
+          where: { producto: { id: idProducto }, deposito: { id_deposito: idDeposito } },
+        });
+
+        if (ppd) {
+          ppd.stock = nuevoStock;
+          await queryRunner.manager.save(ppd);
+        } else {
+          ppd = queryRunner.manager.create(Producto_Por_Deposito, {
+            producto: prod,
+            deposito: dep,
+            stock: nuevoStock,
+          });
+          await queryRunner.manager.save(ppd);
         }
-        
+      }
+
+
+
+
+      await queryRunner.commitTransaction()
+
+    } catch (error) {
+      await queryRunner.rollbackTransaction()
+      throw new InternalServerErrorException(error)
+    } finally {
+      await queryRunner.release()
     }
+
+  }
 }
