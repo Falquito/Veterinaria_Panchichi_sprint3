@@ -22,6 +22,8 @@ export class FacturasService {
 
     const prov = await this.provRepo.findOne({ where: { id_proveedor: dto.proveedorId } });
     const remito = await this.remitoRepo.findOneBy({id_remito:dto.idRemito})
+    if (!remito) throw new BadRequestException('Remito inválido');
+    if (remito.factura) throw new BadRequestException(`El remito ${dto.idRemito} ya tiene una factura asociada.`);
     if (!prov) throw new BadRequestException('Proveedor inválido');
 
     const productos = await this.prodRepo.findBy({ id: In(dto.detalles.map(d => d.productoId)) });
@@ -65,4 +67,24 @@ export class FacturasService {
     if (!fac) throw new NotFoundException('Error: Factura no encontrada');
     return fac;
   }
+
+  async updateEstado(id: number, estado: string) {
+    const factura = await this.findOne(id);
+    const estadosValidos = ["PENDIENTE", "PAGADO", "ANULADO", "CANCELADO"];
+    if (!estadosValidos.includes(estado.toUpperCase())) {
+        throw new BadRequestException(`El estado "${estado}" no es válido.`);
+    }
+    factura.estado = estado.toUpperCase();
+    return this.repo.save(factura);
+  }
+
+  async findPendientes(proveedorId: number) {
+    return this.repo.find({
+        where: {
+            proveedor: { id_proveedor: proveedorId },
+            estado: 'PENDIENTE',
+        },
+        order: { fecha: 'ASC' },
+    });
+}
 }

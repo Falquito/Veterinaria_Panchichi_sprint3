@@ -1,4 +1,5 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+// server/src/depositos/depositos.controller.ts
+import { Controller, Get, Post, Body, Patch, Param, Delete, ParseIntPipe } from '@nestjs/common';
 import { DepositosService } from './depositos.service';
 import { CreateDepositoDto } from './dto/create-deposito.dto';
 import { UpdateDepositoDto } from './dto/update-deposito.dto';
@@ -18,17 +19,17 @@ export class DepositosController {
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
+  findOne(@Param('id', ParseIntPipe) id: number) { // <-- CAMBIO AQUÍ
     return this.depositosService.findOne(id);
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateDepositoDto: UpdateDepositoDto) {
+  update(@Param('id', ParseIntPipe) id: number, @Body() updateDepositoDto: UpdateDepositoDto) { // <-- CAMBIO AQUÍ
     return this.depositosService.update(id, updateDepositoDto);
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
+  remove(@Param('id', ParseIntPipe) id: number) { // <-- CAMBIO AQUÍ
     return this.depositosService.remove(id);
   }
 }

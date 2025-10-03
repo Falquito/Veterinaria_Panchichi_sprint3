@@ -72,6 +72,13 @@ export class OrdenDeCompraService {
     
   }
 
+  async findAvailableForRemito() {
+    return this.ordenRepository.find({
+        where: { remito: null },
+        relations: ['proveedor', 'productos', 'productos.producto']
+    });
+}
+
   async findAll() {
     return await  this.ordenRepository.find();
   }

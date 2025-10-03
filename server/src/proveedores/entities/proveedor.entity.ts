@@ -34,7 +34,7 @@ export class Proveedor {
   @OneToMany(() => OrdenDeCompra, orden => orden.proveedor)
   ordenes: OrdenDeCompra[];
 
-  @OneToMany(()=>Remito,(remito)=>remito.id_proveedor)
+  @OneToMany(()=>Remito,(remito)=>remito.proveedor)
   remitos:Remito[]
 
 

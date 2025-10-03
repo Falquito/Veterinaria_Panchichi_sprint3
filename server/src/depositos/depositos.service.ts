@@ -51,20 +51,20 @@ export class DepositosService {
 
 
   // READ (detalle)
-    async findOne(id: string): Promise<Deposito> {
+    async findOne(id: number): Promise<Deposito> {
       const dep = await this.repo.findOneBy({id_deposito:+id}); // si pongo id da error
       if (!dep) throw new NotFoundException('Depósito no encontrado');
       return dep;
     }
   // UPDATE
-  async update(id: string, dto: UpdateDepositoDto): Promise<Deposito> {
+  async update(id: number, dto: UpdateDepositoDto): Promise<Deposito> {
     const dep = await this.findOne(id);
     Object.assign(dep, dto);
     return this.repo.save(dep);
   }
   // DELETE
 
-  async remove(id: string) {
+  async remove(id: number) {
     const dep = await this.findOne(id);
     dep.activo=false
     return await this.repo.save(dep);;

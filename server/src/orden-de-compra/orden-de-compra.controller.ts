@@ -1,7 +1,7 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+// server/src/orden-de-compra/orden-de-compra.controller.ts
+import { Controller, Get, Post, Body, Param, ParseIntPipe } from '@nestjs/common'; // 1. Importar ParseIntPipe
 import { OrdenDeCompraService } from './orden-de-compra.service';
 import { CreateOrdenDeCompraDto } from './dto/create-orden-de-compra.dto';
-import { UpdateOrdenDeCompraDto } from './dto/update-orden-de-compra.dto';
 
 @Controller('orden-de-compra')
 export class OrdenDeCompraController {
@@ -16,19 +16,15 @@ export class OrdenDeCompraController {
   findAll() {
     return this.ordenDeCompraService.findAll();
   }
-
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.ordenDeCompraService.findOne(+id);
+  
+  @Get('available-for-remito')
+  findAvailableForRemito() {
+      return this.ordenDeCompraService.findAvailableForRemito();
   }
 
-  // @Patch(':id')
-  // update(@Param('id') id: string, @Body() updateOrdenDeCompraDto: UpdateOrdenDeCompraDto) {
-  //   return this.ordenDeCompraService.update(+id, updateOrdenDeCompraDto);
-  // }
-
-  // @Delete(':id')
-  // remove(@Param('id') id: string) {
-  //   return this.ordenDeCompraService.remove(+id);
-  // }
+  // 2. Aplicar ParseIntPipe aquí
+  @Get(':id')
+  findOne(@Param('id', ParseIntPipe) id: number) {
+    return this.ordenDeCompraService.findOne(id);
+  }
 }
