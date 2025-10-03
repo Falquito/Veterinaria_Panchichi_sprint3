@@ -13,7 +13,6 @@ export class DetalleOrdenDePago {
 
   @ManyToOne(() => Comprobante, (comprobante) => comprobante.id, { eager: true })
   comprobante: Comprobante;
-  
 
 //   @Column({ type: "decimal", precision: 12, scale: 2 })
 //   montoAplicado: number;
