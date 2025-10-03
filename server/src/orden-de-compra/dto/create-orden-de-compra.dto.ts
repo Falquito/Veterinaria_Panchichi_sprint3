@@ -1,25 +1,25 @@
-import { ValidateNested, IsArray } from 'class-validator';
+import { ValidateNested, IsArray, IsNumber, IsPositive } from 'class-validator';
 import { Type } from 'class-transformer';
-
-
-
-
-import { IsNumber } from 'class-validator';
 
 export class CreateOrdenDeCompraPorProductoDto {
   @IsNumber()
   productoId: number;
 
   @IsNumber()
+  @IsPositive()
   cantidad: number;
+
+  @IsNumber()
+  @IsPositive()
+  precioUnitario: number;
 }
 
 export class CreateOrdenDeCompraDto {
   @IsNumber()
-  proveedorId:number;
+  proveedorId: number;
+  
   @IsArray()
+  @ValidateNested({ each: true })
   @Type(() => CreateOrdenDeCompraPorProductoDto)
   productos: CreateOrdenDeCompraPorProductoDto[];
-
-
 }
