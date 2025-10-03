@@ -17,9 +17,9 @@ export class OrdenDeCompra {
 
     @OneToMany(() => OrdenDeCompraPorProducto, o => o.ordenDeCompra, { cascade: true , eager:true})
     productos: OrdenDeCompraPorProducto[];
-    precioUnitario: number;
 
-    
+     @Column('decimal', { nullable: true })
+  precioUnitario: number;
 
     @ManyToOne(() => Proveedor, proveedor => proveedor.ordenes, { eager: true })
     proveedor: Proveedor;

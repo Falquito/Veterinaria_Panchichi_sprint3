@@ -28,6 +28,6 @@ export class Remito {
     factura:Factura;
 
 
-    @Column({type:"text"})
+    @Column({type:"text",nullable:true})
     direccion_entrega:string;
 }
