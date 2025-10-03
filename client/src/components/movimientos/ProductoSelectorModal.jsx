@@ -113,9 +113,7 @@ export default function ProductoSelectorModal({ onSelect, selectedProductoId }) 
                             {p.categoria}
                           </span>
                         )}
-                        <span className="text-sm font-semibold text-green-600">
-                          ${p.precio?.toFixed(2)}
-                        </span>
+                        
                       </div>
                     </div>
                   </div>
