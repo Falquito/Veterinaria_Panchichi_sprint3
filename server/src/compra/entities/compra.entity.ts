@@ -26,4 +26,8 @@ export class Remito {
 
     @OneToOne(()=>Factura,(factura)=>factura.remito)
     factura:Factura;
+
+
+    @Column({type:"text"})
+    direccion_entrega:string;
 }

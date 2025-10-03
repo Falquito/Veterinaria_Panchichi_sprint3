@@ -16,5 +16,8 @@ export class Remito_Por_producto{
     @Column({type:"int"})
     cantidad:number;
 
+    @Column({type:"text"})
+    unidad_medida:string;
+
     
 }
