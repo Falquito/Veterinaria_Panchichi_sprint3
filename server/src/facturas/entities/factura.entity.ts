@@ -41,4 +41,7 @@ export class Factura {
   @OneToOne(()=>Remito,(remito)=>remito.factura)
   @JoinColumn()
   remito:Remito;
+
+  @Column({type:"text", default:"PENDIENTE"})
+  estado:string;
 }
