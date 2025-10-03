@@ -15,14 +15,21 @@ export class MovimientosService {
     private readonly dataSource:DataSource;
 
     async create (createMovimientoDto:CreateMovimientoDto){
-        const {tipo,observaciones,motivo,fecha,detalle}= createMovimientoDto
+        const {tipo,observaciones,motivo,detalle}= createMovimientoDto
         const queryRunner = this.dataSource.createQueryRunner()
+        const fecha = new Date();
+
+      const year = fecha.getFullYear() % 100; // últimos 2 dígitos
+      const month = fecha.getMonth() + 1; // los meses van de 0 a 11
+      const day = fecha.getDate();
+
+      const fechaFormateada = `${year.toString().padStart(2,'0')}-${month.toString().padStart(2,'0')}-${day.toString().padStart(2,'0')}`;
         try {
             await queryRunner.connect()
             await queryRunner.startTransaction()
 
             const movimiento = queryRunner.manager.create(Movimientos,{
-                fecha:fecha,
+                fecha:fechaFormateada,
                 tipo:tipo,
                 motivo:motivo,
                 observaciones:observaciones
