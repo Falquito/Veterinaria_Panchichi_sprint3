@@ -9,6 +9,7 @@ import { Comprobante } from './entities/comprobante.entity';
 import { Deposito } from 'src/depositos/entities/deposito.entity';
 import { TipoDeComprobante } from 'src/entities/TipoDeComprobante.entity';
 import { DetalleComprobante } from 'src/entities/DetalleComprobante.entity';
+import { TipoDeFactura } from 'src/entities/TipoDeFactura.entity';
 
 @Injectable()
 export class ComprobanteService {
@@ -22,7 +23,7 @@ export class ComprobanteService {
 
   async create(createComprobanteDto: CreateComprobanteDto) {
 
-      const {fecha, idOrdenDeCompra,idProveedor,idTipoDeComprobante,idDeposito} = createComprobanteDto
+      const {fecha, idOrdenDeCompra,idProveedor,idTipoDeComprobante,idDeposito,direccion_entrega,idTipoFactura,numero,observaciones,productos,total} = createComprobanteDto
       const queryRunner =  this.dataSource.createQueryRunner()
       try {
         await queryRunner.connect()
@@ -31,15 +32,28 @@ export class ComprobanteService {
         //Crear comprobante
         
               const proveedor = await queryRunner.manager.findOneBy(Proveedor,{id_proveedor:idProveedor})
+
               const orden_de_compra = await queryRunner.manager.findOneBy(OrdenDeCompra,{id_oc:idOrdenDeCompra})
+
               const deposito = await queryRunner.manager.findOneBy(Deposito,{id_deposito:idDeposito})
+
               const tipoDeComprobante = await queryRunner.manager.findOneBy(TipoDeComprobante,{id:idTipoDeComprobante})
+
+              const tipoDeFactura = await queryRunner.manager.findOneBy(TipoDeFactura,{
+                id:idTipoFactura
+              })
+
               const comprobante = queryRunner.manager.create(Comprobante, {
                 fecha: fecha,
                 proveedor:proveedor,
                 ordenDeCompra:orden_de_compra,
                 deposito:deposito,
-                tipoDeComprobante:tipoDeComprobante
+                tipoDeComprobante:tipoDeComprobante,
+                direccion_entrega,
+                numero:numero,
+                observaciones,
+                tipoFactura:tipoDeComprobante.tipo.toLowerCase()==="factura"?tipoDeFactura:"",
+                total:tipoDeComprobante.tipo.toLowerCase()==="factura"?total:0
               });
               console.log(comprobante)
               

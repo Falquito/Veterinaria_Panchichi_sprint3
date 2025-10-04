@@ -20,4 +20,23 @@ export interface Factura {
         id_proveedor: number;
         nombre: string;
     };
+    tipoDeComprobante:{
+        id:number,
+        tipo:string;
+    }
+    ordenDeCompra:{
+        id_oc:number
+    }
+    detalles:[{
+        id:number,
+        cantidad:number,
+        producto:{
+            id:number,
+            nombre:string
+        }
+    }]
+    deposito:{
+        id_deposito:number,
+        nombre:string;
+    }
 }
