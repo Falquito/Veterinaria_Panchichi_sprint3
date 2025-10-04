@@ -1,5 +1,5 @@
 import { Type } from "class-transformer";
-import { IsArray, isNumber, IsNumber, IsString } from "class-validator";
+import { IsArray, isNumber, IsNumber, IsOptional, IsString } from "class-validator";
 
 export class CreateComprobanteDto {
     @IsNumber()
@@ -21,6 +21,24 @@ export class CreateComprobanteDto {
     @IsArray()
     @Type(()=>comprobanteProductDto)
     productos:comprobanteProductDto[]
+
+    @IsString()
+    @IsOptional()
+    observaciones:string;
+    
+    @IsNumber()
+    numero:number;
+    @IsNumber()
+    total:number;
+
+    @IsOptional()
+    @IsString()
+    direccion_entrega:string;
+    
+
+    @IsNumber()
+    @IsOptional()
+    idTipoFactura:number;
     
 }
 
