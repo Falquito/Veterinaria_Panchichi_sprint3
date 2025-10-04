@@ -75,9 +75,20 @@ const Comprobantes = () => {
 
         <div className="mt-8">
           {activeTab === 'remitos' && <Remitos />}
-          {activeTab === 'facturas' && <Facturas />}
+          {activeTab === 'facturas' && (
+            // Si tu componente Facturas no escucha reloadFlag, podemos envolverlo para forzar un remount con key
+            <div key={reloadFlag}>
+              <Facturas />
+            </div>
+          )}
         </div>
       </div>
+
+      <NuevaFacturaModal
+        open={showNuevaFactura}
+        onClose={() => setShowNuevaFactura(false)}
+        onSuccess={handleFacturaCreada}
+      />
     </div>
   );
 };
