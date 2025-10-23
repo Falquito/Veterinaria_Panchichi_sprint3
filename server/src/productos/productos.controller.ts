@@ -74,6 +74,11 @@ export class ProductosController {
     return this.productosService.findAll();
   }
 
+  @Get("/product-list")
+  findAllList() {
+    return this.productosService.findAllList();
+  }
+
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.productosService.findOne(+id);
