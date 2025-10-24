@@ -1,4 +1,4 @@
-import { Injectable, InternalServerErrorException } from '@nestjs/common';
+import { Inject, Injectable, InternalServerErrorException } from '@nestjs/common';
 import { CreateVentaDto } from './dto/create-venta.dto';
 import { UpdateVentaDto } from './dto/update-venta.dto';
 import { InjectDataSource } from '@nestjs/typeorm';
@@ -7,19 +7,24 @@ import { Venta } from './entities/venta.entity';
 import { DetalleVenta } from './entities/detalle-venta.entity';
 import { Producto } from 'src/productos/entities/producto.entity';
 import { Clientes } from 'src/entities/Cliente.entity';
+import { Movimientos } from 'src/entities/Movimientos.entity';
+import { MovimientosService } from 'src/movimientos/movimientos/movimientos.service';
+import { CreateMovimientoDto, detalleMovimientoDto } from 'src/movimientos/movimientos/dto/create-movimiento.dto';
 
 @Injectable()
 export class VentasService {
   constructor(
     @InjectDataSource()
-    private readonly dataSource:DataSource
+    private readonly dataSource:DataSource,
+    @Inject(MovimientosService)
+    private readonly movimientoService:MovimientosService
   ){}
 
   async create(createVentaDto: CreateVentaDto) {
 
     const {total,items,billingInfo,cardInfo} = createVentaDto
     const queryRunner = this.dataSource.createQueryRunner()
-
+    let detalleMov:detalleMovimientoDto[]=[]
     try {
       await queryRunner.connect()
       await queryRunner.startTransaction()
@@ -57,12 +62,26 @@ export class VentasService {
         })
 
         await queryRunner.manager.save(detalleVenta)
+        detalleMov.push({
+          cantidad:-item.cantidad,
+          idDeposito:2,
+          idProducto:item.id
+        })
       }
+
+      const movDTO:CreateMovimientoDto={
+        tipo:"UPD",
+        motivo:"Venta",
+        detalle:detalleMov,
+        observaciones:""
+      }
+      await this.movimientoService.create(movDTO)
       await queryRunner.commitTransaction()
       return venta;
     } catch (error) {
       await queryRunner.rollbackTransaction()
-      throw new InternalServerErrorException()
+      console.log(error)
+      throw new InternalServerErrorException(error)
     }finally{
       await queryRunner.release()
     }

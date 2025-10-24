@@ -36,7 +36,7 @@ export class CreateComprobanteDto {
     direccion_entrega:string;
     
 
-    @IsNumber()
+    
     @IsOptional()
     idTipoFactura:number;
     
