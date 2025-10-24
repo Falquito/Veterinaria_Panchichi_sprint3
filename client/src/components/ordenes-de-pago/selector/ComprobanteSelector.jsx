@@ -15,12 +15,30 @@ const ComprobanteSelector = ({ onSelect, onClose, selectedComprobanteId, proveed
       const response = await fetch('http://localhost:3000/comprobante');
       const data = await response.json();
       
-      // Filtrar comprobantes del proveedor seleccionado
-      const comprobantesFiltrados = (data || []).filter(c => 
-        c.proveedor?.id_proveedor === proveedorId
+      // Obtener todos los comprobantes ya usados
+      const responseUsados = await fetch('http://localhost:3000/orden-de-pago');
+      const ordenesExistentes = await responseUsados.json();
+      
+      const comprobantesUsados = new Set();
+      ordenesExistentes.forEach(orden => {
+        orden.detalles?.forEach(detalle => {
+          if (detalle.comprobante?.id) {
+            comprobantesUsados.add(detalle.comprobante.id);
+          }
+        });
+      });
+      
+      console.log('Comprobantes usados:', Array.from(comprobantesUsados));
+      
+      // 🔧 FILTRO PRINCIPAL: solo facturas disponibles del proveedor
+      const comprobantesFiltradosPrincipales = (data || []).filter(c => 
+        c.proveedor?.id_proveedor === proveedorId &&
+        c.tipoDeComprobante?.tipo?.toLowerCase() === 'factura' &&
+        !comprobantesUsados.has(c.id)
       );
       
-      setComprobantes(comprobantesFiltrados);
+      console.log('Comprobantes disponibles:', comprobantesFiltradosPrincipales);
+      setComprobantes(comprobantesFiltradosPrincipales);
     } catch (error) {
       console.error('Error al cargar comprobantes:', error);
     } finally {
@@ -28,9 +46,10 @@ const ComprobanteSelector = ({ onSelect, onClose, selectedComprobanteId, proveed
     }
   };
 
+  // 🔧 FILTRO DE BÚSQUEDA: fuera de loadComprobantes
   const comprobantesFiltrados = comprobantes.filter(c =>
     c.id.toString().includes(searchTerm) ||
-    (c.tipoDeComprobante?.nombre || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
+    (c.tipoDeComprobante?.tipo || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
     (c.deposito?.nombre || '').toLowerCase().includes(searchTerm.toLowerCase())
   );
 
@@ -112,7 +131,7 @@ const ComprobanteSelector = ({ onSelect, onClose, selectedComprobanteId, proveed
                             Comprobante #{comprobante.id}
                           </h4>
                           <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-purple-100 text-purple-700">
-                            {comprobante.tipoDeComprobante?.nombre || 'Sin tipo'}
+                            {comprobante.tipoDeComprobante?.tipo || 'Sin tipo'}
                           </span>
                         </div>
 
@@ -143,6 +162,18 @@ const ComprobanteSelector = ({ onSelect, onClose, selectedComprobanteId, proveed
                             </div>
                           )}
                         </div>
+
+                        {/* Mostrar total si es factura */}
+                        {comprobante.total && (
+                          <div className="mt-2 p-2 bg-green-50 border border-green-200 rounded">
+                            <div className="flex items-center justify-between">
+                              <span className="text-sm font-medium text-green-700">Total de la factura:</span>
+                              <span className="text-lg font-bold text-green-900">
+                                ${comprobante.total.toLocaleString('es-AR', { minimumFractionDigits: 2 })}
+                              </span>
+                            </div>
+                          </div>
+                        )}
 
                         {/* Detalles expandibles */}
                         {comprobante.detalles && comprobante.detalles.length > 0 && (

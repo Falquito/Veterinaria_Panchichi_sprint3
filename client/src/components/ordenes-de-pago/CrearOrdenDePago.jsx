@@ -38,88 +38,117 @@ const CrearOrdenDePago = ({ onClose, onSuccess }) => {
     setShowProveedorSelector(false);
   };
 
-  const handleComprobanteSelect = (comprobante) => {
+const removeComprobante = (id) => {
+  const comprobantesRestantes = formData.comprobantes.filter(c => c.id !== id);
+  
+  // Recalcular total (todos son facturas)
+  const totalFacturas = comprobantesRestantes
+    .reduce((sum, c) => sum + (c.total || 0), 0);
+  
+  setFormData(prev => ({
+    ...prev,
+    comprobantes: comprobantesRestantes,
+    montoTotal: totalFacturas.toString()
+  }));
+};
 
-    if (formData.comprobantes.find(c => c.id === comprobante.id)) {
-      setError('Este comprobante ya fue agregado');
-      setTimeout(() => setError(null), 3000);
-      return;
-    }
-    setFormData(prev => ({
-      ...prev,
-      comprobantes: [...prev.comprobantes, comprobante]
-    }));
-    setShowComprobanteSelector(false);
-  };
+ const handleComprobanteSelect = (comprobante) => {
+  console.log('Factura seleccionada:', comprobante);
+  console.log('Total de la factura:', comprobante.total);
 
-  const removeComprobante = (id) => {
-    setFormData(prev => ({
-      ...prev,
-      comprobantes: prev.comprobantes.filter(c => c.id !== id)
-    }));
-  };
+  if (formData.comprobantes.find(c => c.id === comprobante.id)) {
+    setError('Este comprobante ya fue agregado');
+    setTimeout(() => setError(null), 3000);
+    return;
+  }
+
+  const updatedComprobantes = [...formData.comprobantes, comprobante];
+  
+  // Como todos son facturas, siempre calcular el total
+  const totalFacturas = updatedComprobantes
+    .reduce((sum, c) => sum + (c.total || 0), 0);
+  
+  console.log('Total calculado:', totalFacturas);
+
+  setFormData(prev => ({
+    ...prev,
+    comprobantes: updatedComprobantes,
+    montoTotal: totalFacturas.toString()
+  }));
+  
+  setShowComprobanteSelector(false);
+};
 
   const handleSubmit = async () => {
-    setLoading(true);
-    setError(null);
-    setSuccess(false);
+  setLoading(true);
+  setError(null);
+  setSuccess(false);
 
+  if (!formData.idProveedor) {
+    setError('Debes seleccionar un proveedor');
+    setLoading(false);
+    return;
+  }
+  if (!formData.fecha || !formData.formaDePago) {
+    setError('Por favor completa todos los campos obligatorios');
+    setLoading(false);
+    return;
+  }
+  if (formData.comprobantes.length === 0) {
+    setError('Debes agregar al menos un comprobante');
+    setLoading(false);
+    return;
+  }
+  if (!formData.montoTotal || parseFloat(formData.montoTotal) <= 0) {
+    setError('Debes ingresar un monto total válido');
+    setLoading(false);
+    return;
+  }
 
-    if (!formData.idProveedor) {
-      setError('Debes seleccionar un proveedor');
-      setLoading(false);
-      return;
+  try {
+    const payload = {
+      fecha: formData.fecha,
+      formaDePago: formData.formaDePago,
+      idProveedor: formData.idProveedor,
+      montoTotal: parseFloat(formData.montoTotal),
+      comprobantes: formData.comprobantes.map(c => ({ idComprobante: c.id }))
+    };
+
+    const response = await fetch('http://localhost:3000/orden-de-pago', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}));
+      throw new Error(errorData.message || 'Error al crear la orden de pago');
     }
-    if (!formData.fecha || !formData.formaDePago) {
-      setError('Por favor completa todos los campos obligatorios');
-      setLoading(false);
-      return;
-    }
-    if (formData.comprobantes.length === 0) {
-      setError('Debes agregar al menos un comprobante');
-      setLoading(false);
-      return;
-    }
-    if (!formData.montoTotal || parseFloat(formData.montoTotal) <= 0) {
-      setError('Debes ingresar un monto total válido');
-      setLoading(false);
-      return;
-    }
 
-    try {
-      const payload = {
-        fecha: formData.fecha,
-        formaDePago: formData.formaDePago,
-        idProveedor: formData.idProveedor,
-        montoTotal: parseFloat(formData.montoTotal),
-        comprobantes: formData.comprobantes.map(c => ({ idComprobante: c.id }))
-      };
+    setSuccess(true);
+    
+    // ✅ AGREGAR: Resetear formulario después del éxito
+    setFormData({
+      fecha: new Date().toISOString().slice(0, 16),
+      formaDePago: 'Transferencia',
+      idProveedor: null,
+      proveedorNombre: '',
+      proveedorCuit: '',
+      montoTotal: '',
+      comprobantes: []
+    });
+    
+    setTimeout(() => {
+      onSuccess?.();
+      onClose();
+    }, 1500);
 
-
-      const response = await fetch('http://localhost:3000/orden-de-pago', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload)
-      });
-
-      if (!response.ok) {
-        const errorData = await response.json().catch(() => ({}));
-        throw new Error(errorData.message || 'Error al crear la orden de pago');
-      }
-
-      setSuccess(true);
-      setTimeout(() => {
-        onSuccess?.();
-        onClose();
-      }, 1500);
-
-    } catch (err) {
-      setError(err.message);
-    } finally {
-      setLoading(false);
-    }
-  };
-
+  } catch (err) {
+    setError(err.message);
+  } finally {
+    setLoading(false);
+  }
+};
   return (
     <>
       <div className="fixed inset-0 backdrop-blur-xl bg-opacity-50 flex items-center justify-center p-4 z-50" onClick={onClose}>
@@ -201,12 +230,20 @@ const CrearOrdenDePago = ({ onClose, onSuccess }) => {
                     </label>
                     <div className="relative">
                       <input
-                        type="datetime-local"
-                        name="fecha"
-                        value={formData.fecha}
-                        onChange={handleInputChange}
-                        className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                      />
+  type="number"
+  name="montoTotal"
+  value={formData.montoTotal}
+  onChange={handleInputChange}
+  placeholder="0.00"
+  step="0.01"
+  min="0"
+  readOnly={formData.comprobantes.length > 0} // Readonly si hay comprobantes
+  className={`w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+    formData.comprobantes.length > 0 
+      ? 'bg-gray-100 cursor-not-allowed text-gray-700' 
+      : ''
+  }`}
+/>
                     </div>
                   </div>
 
@@ -228,24 +265,34 @@ const CrearOrdenDePago = ({ onClose, onSuccess }) => {
                   </div>
 
                   {/* Monto Total */}
-                  <div className="md:col-span-2">
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Monto Total <span className="text-red-500">*</span>
-                    </label>
-                    <div className="relative">
-                      <DollarSign className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
-                      <input
-                        type="number"
-                        name="montoTotal"
-                        value={formData.montoTotal}
-                        onChange={handleInputChange}
-                        placeholder="0.00"
-                        step="0.01"
-                        min="0"
-                        className="w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                      />
-                    </div>
-                  </div>
+<div className="md:col-span-2">
+  <label className="block text-sm font-medium text-gray-700 mb-2">
+    Monto Total <span className="text-red-500">*</span>
+    {formData.comprobantes.some(c => c.tipoDeComprobante?.tipo === 'factura') && (
+      <span className="ml-2 text-xs text-blue-600 font-normal">
+        (Calculado automáticamente desde las facturas)
+      </span>
+    )}
+  </label>
+  <div className="relative">
+    <DollarSign className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+    <input
+      type="number"
+      name="montoTotal"
+      value={formData.montoTotal}
+      onChange={handleInputChange}
+      placeholder="0.00"
+      step="0.01"
+      min="0"
+    readOnly={formData.comprobantes.some(c => c.tipoDeComprobante?.tipo?.toLowerCase() === 'factura')}
+className={`w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+  formData.comprobantes.some(c => c.tipoDeComprobante?.tipo?.toLowerCase() === 'factura') 
+    ? 'bg-gray-100 cursor-not-allowed text-gray-700' 
+    : ''
+}`}
+    />
+  </div>
+</div>
                 </div>
               </div>
 
@@ -316,21 +363,32 @@ const CrearOrdenDePago = ({ onClose, onSuccess }) => {
                               </button>
                             </div>
                             <div className="grid grid-cols-2 gap-4 text-sm">
-                              <div>
-                                <span className="text-gray-500">Fecha:</span>
-                                <span className="ml-2 text-gray-900">
-                                  {comprobante.fecha ? new Date(comprobante.fecha).toLocaleDateString('es-AR') : 'Sin fecha'}
-                                </span>
-                              </div>
-                              <div>
-                                <span className="text-gray-500">Depósito:</span>
-                                <span className="ml-2 text-gray-900">{comprobante.deposito?.nombre || 'Sin depósito'}</span>
-                              </div>
-                              <div className="col-span-2">
-                                <span className="text-gray-500">Productos:</span>
-                                <span className="ml-2 text-gray-900">{comprobante.detalles?.length || 0} items</span>
-                              </div>
-                            </div>
+  <div>
+    <span className="text-gray-500">Fecha:</span>
+    <span className="ml-2 text-gray-900">
+      {comprobante.fecha ? new Date(comprobante.fecha).toLocaleDateString('es-AR') : 'Sin fecha'}
+    </span>
+  </div>
+  <div>
+    <span className="text-gray-500">Depósito:</span>
+    <span className="ml-2 text-gray-900">{comprobante.deposito?.nombre || 'Sin depósito'}</span>
+  </div>
+  <div>
+    <span className="text-gray-500">Productos:</span>
+    <span className="ml-2 text-gray-900">{comprobante.detalles?.length || 0} items</span>
+  </div>
+{/* Agregar esto después de los detalles de productos */}
+{comprobante.tipoDeComprobante?.tipo?.toLowerCase() === 'factura' && comprobante.total && (
+  <div className="mt-2 p-2 bg-green-50 border border-green-200 rounded">
+    <div className="flex items-center justify-between">
+      <span className="text-sm font-medium text-green-700">Total de la factura:</span>
+      <span className="text-lg font-bold text-green-900">
+        ${comprobante.total.toLocaleString('es-AR', { minimumFractionDigits: 2 })}
+      </span>
+    </div>
+  </div>
+)}
+</div>
                           </div>
                         </div>
                       </div>

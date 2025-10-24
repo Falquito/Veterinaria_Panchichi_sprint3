@@ -1,5 +1,6 @@
 import type { Remito, Factura } from '../types/comprobantes';
 
+
 const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
 
 class ComprobantesService {
@@ -30,7 +31,21 @@ class ComprobantesService {
         });
         return this.handleResponse<Remito>(response);
     }
+
+   async getComprobanteById(comprobanteId: number): Promise<Factura> {
+    const response = await fetch(`${API_BASE_URL}/comprobante/${comprobanteId}`);
+    return this.handleResponse<Factura>(response);
 }
+
+// En ComprobantesService
+async getOrdenesDeComprobanteUsado(comprobanteId: number): Promise<any[]> {
+    const response = await fetch(`${API_BASE_URL}/orden-de-pago/comprobante/${comprobanteId}`);
+    return this.handleResponse<any[]>(response);
+}
+    
+}
+
+
 
 export const comprobantesService = new ComprobantesService();
 export type { Remito, Factura };

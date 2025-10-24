@@ -20,14 +20,13 @@ export class Comprobante {
     @ManyToOne(()=>Proveedor,(proveedor)=>proveedor.comprobante,{eager:true})
     proveedor:Proveedor;
 
-
     @OneToOne(()=>OrdenDeCompra,(ordenDeCompra)=>ordenDeCompra.comprobante,{eager:true})
     @JoinColumn()
     ordenDeCompra:OrdenDeCompra;
 
-
     @OneToMany(()=>DetalleComprobante,(detalleComprobante)=>detalleComprobante.comprobante,{cascade:true,eager:true})
-        detalles:DetalleComprobante[]
+    detalles:DetalleComprobante[]
+    
     @ManyToOne(()=>Deposito,(deposito)=>deposito.comprobante,{eager:true})
     deposito:Deposito;
 
@@ -46,5 +45,6 @@ export class Comprobante {
     @ManyToOne(()=>TipoDeFactura,(tipoDeFactura)=>tipoDeFactura.id ,{eager:true})
     tipoFactura:TipoDeFactura|string;
 
-    
+    @Column({type:"varchar", length: 50, default: "disponible"})
+    estado:string; // 'disponible', 'usado', 'pendiente'
 }

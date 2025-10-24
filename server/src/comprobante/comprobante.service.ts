@@ -23,6 +23,8 @@ export class ComprobanteService {
 
   async create(createComprobanteDto: CreateComprobanteDto) {
 
+    
+
       const {fecha, idOrdenDeCompra,idProveedor,idTipoDeComprobante,idDeposito,direccion_entrega,idTipoFactura,numero,observaciones,productos,total} = createComprobanteDto
       const queryRunner =  this.dataSource.createQueryRunner()
       try {
@@ -96,4 +98,11 @@ export class ComprobanteService {
               this.logger.error(error);
               throw new InternalServerErrorException("Unexpected errir, check server logs");
     }
+
+    async getComprobantes() {
+  return await this.comprobanteRepository.find({
+    where: { estado: 'disponible' },
+    relations: ['tipoDeComprobante', 'proveedor', 'deposito']
+  });
+}
 }
