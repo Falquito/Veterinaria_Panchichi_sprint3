@@ -87,9 +87,10 @@ export const DesktopSidebar = ({
   const { open, setOpen, animate } = useSidebar();
   return (
     <>
+          {/*COLOR DEL SIDEBAR*/}
       <motion.div
         className={cn(
-          "h-full px-4 py-4 hidden  md:flex md:flex-col text-black bg-neutral-100 dark:bg-white w-[300px] shrink-0   ",
+          "h-full px-4 py-4 hidden  md:flex md:flex-col text-black bg-neutral-50 dark:bg-white w-[300px] shrink-0   ",
           className
         )}
         animate={{

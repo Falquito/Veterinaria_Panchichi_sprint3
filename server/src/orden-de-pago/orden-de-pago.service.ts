@@ -39,47 +39,46 @@ export class OrdenDePagoService {
       })
 
       await queryRunner.manager.save(ordenDePago)
+      
       for(const {idComprobante} of comprobantes){
-
         const comprobante = await queryRunner.manager.findOneBy(Comprobante,{
             id:idComprobante
           })
         if(!comprobante){
           throw new NotFoundException(`No se encontro el comprobante con el id: ${idComprobante}`)
         }
+        
         const detalleOrdenDePago = queryRunner.manager.create(DetalleOrdenDePago,{
-          comprobante: comprobante
-          ,ordenDePago:ordenDePago
+          comprobante: comprobante,
+          ordenDePago:ordenDePago
         })
 
         await queryRunner.manager.save(detalleOrdenDePago)
 
+        // 🔧 AGREGAR ESTO: Marcar comprobante como usado
+        await queryRunner.manager.update(Comprobante, 
+          { id: idComprobante }, 
+          { estado: 'usado' }
+        )
       }
 
       await queryRunner.commitTransaction()
       return ordenDePago;
 
-
-
     } catch (error) {
       await queryRunner.rollbackTransaction()
       
-      //si el error es una HttpException (NotFound, BadRequest, etc.), lo relanzo
       if (error instanceof Error) {
         throw error;
       }
 
-      //si es otro error inesperado, lo logueo y relanzo un error genérico
       this.logger.error(error);
       throw new InternalServerErrorException('Error creando la orden de pago');
-      
-
       
     }finally{
       await queryRunner.release()
     }
-
-  }
+}
 
   async findAll() {
     return await this.orderDePagoRepository.find()
