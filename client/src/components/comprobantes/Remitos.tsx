@@ -81,8 +81,7 @@ export const Remitos = () => {
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">ID</th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Proveedor</th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Fecha</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Estado</th>
-              <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase">Acciones</th>
+              
             </tr>
           </thead>
           <tbody className="bg-white divide-y divide-gray-200">
@@ -92,23 +91,8 @@ export const Remitos = () => {
                   <td className="px-6 py-4 text-sm font-medium text-gray-900">{remito.id_remito}</td>
                   <td className="px-6 py-4 text-sm text-gray-500">{remito.proveedor?.nombre || 'N/A'}</td>
                   <td className="px-6 py-4 text-sm text-gray-500">{formatDate(remito.fecha)}</td>
-                  <td className="px-6 py-4 text-sm">
-                    <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
-                      remito.estado === 'Recibido' ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'
-                    }`}>
-                      {remito.estado}
-                    </span>
-                  </td>
-                  <td className="px-6 py-4 text-center">
-                    {remito.estado === 'Pendiente' && (
-                      <button 
-                        onClick={() => handleConfirmClick(remito)}
-                        className="bg-blue-600 text-white px-3 py-1 text-xs font-bold rounded-md hover:bg-blue-700"
-                      >
-                        Confirmar Recepción
-                      </button>
-                    )}
-                  </td>
+                  
+      
                 </tr>
               ))
             ) : (

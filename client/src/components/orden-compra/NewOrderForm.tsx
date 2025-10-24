@@ -183,10 +183,7 @@ export default function NewOrderForm({
             >
               {loading ? "Registrando..." : "Registrar Orden"}
             </button>
-            <button className="bg-gray-100 text-gray-700 px-8 py-3 rounded-lg hover:bg-gray-200 font-medium border border-gray-300 transition-colors">
-              <Download className="mr-2 h-4 w-4 inline" />
-              Descargar PDF
-            </button>
+         
           </div>
 
           {error && <div className="mt-4 bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-md">{error}</div>}

@@ -7,6 +7,7 @@ import Movimientos from "./pages/movimientos.jsx";
 import Comprobantes from "./pages/Comprobantes";
 import Proveedores from "./pages/Proveedores";
 import OrdenDePagoPage from "./pages/orden-de-pago.jsx";
+import Dashboard from "./pages/Dashboard";
 
 function App() {
   return (
@@ -21,6 +22,7 @@ function App() {
           <Route path="comprobantes" element={<Comprobantes />} />
           <Route path="proveedores" element={<Proveedores />} />
           <Route path="orden-de-pago" element={<OrdenDePagoPage />} />
+          <Route path="dashboard" element={<Dashboard />} />
         </Route>
       </Routes>
     </BrowserRouter>
