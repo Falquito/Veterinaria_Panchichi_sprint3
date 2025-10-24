@@ -122,6 +122,10 @@ export class ProductosService {
             this.handleDbExceptions(error);
         }
   }
+
+  async findAllList(){
+    return this.productRepository.find()
+  }
   async findOne(id: number) {
     let bandera = false;
             try {

@@ -11,6 +11,7 @@ import { FacturasModule } from './facturas/facturas.module';
 import { ComprobanteModule } from './comprobante/comprobante.module';
 import { MovimientosModule } from './movimientos/movimientos/movimientos.module';
 import { OrdenDePagoModule } from './orden-de-pago/orden-de-pago.module';
+import { VentasModule } from './ventas/ventas.module';
 
 @Module({
   imports: [ProductosModule,
@@ -42,7 +43,8 @@ import { OrdenDePagoModule } from './orden-de-pago/orden-de-pago.module';
         FacturasModule,
         ComprobanteModule,
         MovimientosModule,
-        OrdenDePagoModule
+        OrdenDePagoModule,
+        VentasModule
         
   ],
   controllers: [],
