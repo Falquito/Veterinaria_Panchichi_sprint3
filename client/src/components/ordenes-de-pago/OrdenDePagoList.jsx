@@ -1,11 +1,12 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { FileText, AlertCircle, DollarSign, Clock, CheckCircle, XCircle, Plus, Eye, Search, Calendar } from 'lucide-react';
+import { FileText, AlertCircle, DollarSign, Clock, CheckCircle, XCircle, Plus, Eye, Search, Calendar, CreditCard } from 'lucide-react';
 
 import CrearOrdenDePago from "../ordenes-de-pago/CrearOrdenDePago";
 import OrdenDetalleModal from "../ordenes-de-pago/OrdenDetalleModal";
 
 const OrdenDePagoList = () => {
   const [ordenes, setOrdenes] = useState([]);
+  const [facturas, setFacturas] = useState([]); // Nuevo: para calcular KPIs
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [searchTerm, setSearchTerm] = useState('');
@@ -18,13 +19,19 @@ const OrdenDePagoList = () => {
     setLoading(true);
     setError(null);
     try {
-      // ⬅️ puerto correcto
-      const response = await fetch('http://localhost:3000/orden-de-pago');
-      if (!response.ok) throw new Error('Error al obtener las órdenes de pago');
-      const data = await response.json();
-      setOrdenes(Array.isArray(data) ? data : []);
+      // Cargar órdenes
+      const responseOrdenes = await fetch('http://localhost:3000/orden-de-pago');
+      if (!responseOrdenes.ok) throw new Error('Error al obtener las órdenes de pago');
+      const dataOrdenes = await responseOrdenes.json();
+      setOrdenes(Array.isArray(dataOrdenes) ? dataOrdenes : []);
+
+      // Cargar facturas para KPIs
+      const responseFacturas = await fetch('http://localhost:3000/comprobante');
+      if (!responseFacturas.ok) throw new Error('Error al obtener las facturas');
+      const dataFacturas = await responseFacturas.json();
+      setFacturas(Array.isArray(dataFacturas) ? dataFacturas : []);
     } catch (err) {
-      setError('Error al cargar las órdenes de pago');
+      setError('Error al cargar los datos');
     } finally {
       setLoading(false);
     }
@@ -49,6 +56,14 @@ const OrdenDePagoList = () => {
     return new Date(fecha).toLocaleDateString('es-AR');
   };
 
+  const formatMoney = (amount) => {
+    return new Intl.NumberFormat('es-AR', {
+      style: 'currency',
+      currency: 'ARS',
+      minimumFractionDigits: 2
+    }).format(amount);
+  };
+
   const getEstadoBadge = (estado) => {
     switch (estado) {
       case 'Pendiente': return 'bg-yellow-100 text-yellow-800 border-yellow-200';
@@ -67,11 +82,24 @@ const OrdenDePagoList = () => {
     }
   };
 
+  // Calcular KPIs basados en la lógica correcta
   const stats = {
-    total: ordenes.length,
-    pendientes: ordenes.filter(o => o.estado === 'Pendiente').length,
-    pagadas: ordenes.filter(o => o.estado === 'Pagado').length,
-    montoTotal: ordenes.reduce((sum, o) => sum + (parseFloat(o.montoTotal) || 0), 0),
+    // Total de órdenes de pago (todas representan pagos realizados)
+    totalOrdenes: ordenes.length,
+    
+    // Facturas disponibles (pendientes de pago - aún no tienen orden)
+    facturasPendientes: facturas.filter(f => f.estado === 'disponible').length,
+    
+    // Monto total de todas las órdenes (sin importar estado, porque todas son pagos)
+    montoPagado: ordenes.reduce((sum, o) => sum + (parseFloat(o.montoTotal) || 0), 0),
+    
+    // Monto total a pagar (facturas disponibles)
+    montoAPagar: facturas
+      .filter(f => f.estado === 'disponible')
+      .reduce((sum, f) => sum + (parseFloat(f.total) || 0), 0),
+    
+    // Facturas ya usadas en órdenes de pago
+    facturasUsadas: facturas.filter(f => f.estado === 'usado').length,
   };
 
   return (
@@ -94,51 +122,93 @@ const OrdenDePagoList = () => {
           </div>
         </div>
 
-        {/* Stats */}
+        {/* Stats Mejoradas */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+          {/* Total Órdenes = Órdenes Pagadas */}
           <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-gray-600 mb-1">Total Órdenes</p>
-                <p className="text-2xl font-bold text-gray-900">{stats.total}</p>
-              </div>
-              <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
-                <FileText className="w-6 h-6 text-blue-600" />
-              </div>
-            </div>
-          </div>
-          <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-gray-600 mb-1">Pendientes</p>
-                <p className="text-2xl font-bold text-yellow-600">{stats.pendientes}</p>
-              </div>
-              <div className="w-12 h-12 bg-yellow-100 rounded-lg flex items-center justify-center">
-                <Clock className="w-6 h-6 text-yellow-600" />
-              </div>
-            </div>
-          </div>
-          <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-gray-600 mb-1">Pagadas</p>
-                <p className="text-2xl font-bold text-green-600">{stats.pagadas}</p>
+                <p className="text-sm text-gray-600 mb-1">Órdenes Pagadas</p>
+                <p className="text-2xl font-bold text-green-600">{stats.totalOrdenes}</p>
+                <p className="text-xs text-gray-500">Total procesadas</p>
               </div>
               <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
                 <CheckCircle className="w-6 h-6 text-green-600" />
               </div>
             </div>
           </div>
+
+          {/* Facturas Pendientes */}
           <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-gray-600 mb-1">Monto Total</p>
-                <p className="text-2xl font-bold text-gray-900">
-                  ${stats.montoTotal.toFixed(2)}
-                </p>
+                <p className="text-sm text-gray-600 mb-1">Facturas Pendientes</p>
+                <p className="text-2xl font-bold text-yellow-600">{stats.facturasPendientes}</p>
+                <p className="text-xs text-gray-500">Sin orden de pago</p>
               </div>
-              <div className="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center">
-                <DollarSign className="w-6 h-6 text-purple-600" />
+              <div className="w-12 h-12 bg-yellow-100 rounded-lg flex items-center justify-center">
+                <Clock className="w-6 h-6 text-yellow-600" />
+              </div>
+            </div>
+          </div>
+
+         
+
+          {/* Monto A Pagar */}
+          <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm text-gray-600 mb-1">A Pagar</p>
+                <p className="text-xl font-bold text-red-600">
+                  {formatMoney(stats.montoAPagar)}
+                </p>
+                <p className="text-xs text-gray-500">Facturas pendientes</p>
+              </div>
+              <div className="w-12 h-12 bg-red-100 rounded-lg flex items-center justify-center">
+                <CreditCard className="w-6 h-6 text-red-600" />
+              </div>
+            </div>
+          </div>
+
+          {/* Monto Total Pagado */}
+          <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm text-gray-600 mb-1">Total Pagado</p>
+                <p className="text-xl font-bold text-green-600">
+                  {formatMoney(stats.montoPagado)}
+                </p>
+                <p className="text-xs text-gray-500">Todas las órdenes</p>
+              </div>
+              <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
+                <DollarSign className="w-6 h-6 text-green-600" />
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Resumen financiero */}
+        <div className="bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-lg p-6 mb-6">
+          <div className="flex items-center justify-between">
+            <div>
+              <h3 className="text-lg font-semibold text-blue-900 mb-2">Resumen Financiero</h3>
+              <p className="text-blue-700 text-sm">
+                Has procesado <strong>{stats.totalOrdenes} órdenes de pago</strong> por un total de{' '}
+                <strong>{formatMoney(stats.montoPagado)}</strong>. Quedan{' '}
+                <strong>{stats.facturasPendientes} facturas pendientes</strong> por{' '}
+                <strong>{formatMoney(stats.montoAPagar)}</strong>.
+              </p>
+            </div>
+            <div className="text-right">
+              <div className="text-sm text-blue-600 mb-1">Progreso de Pagos</div>
+              <div className="text-2xl font-bold text-blue-900">
+                {stats.montoAPagar > 0 
+                  ? `${((stats.montoPagado / (stats.montoPagado + stats.montoAPagar)) * 100).toFixed(1)}%`
+                  : '100%'
+                }
+              </div>
+              <div className="text-xs text-blue-600">
+                {stats.facturasUsadas} procesadas / {stats.facturasUsadas + stats.facturasPendientes} total
               </div>
             </div>
           </div>
@@ -236,7 +306,7 @@ const OrdenDePagoList = () => {
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap">
                           <span className="text-sm font-semibold text-green-600">
-                            ${parseFloat(orden.montoTotal || 0).toFixed(2)}
+                            {formatMoney(parseFloat(orden.montoTotal || 0))}
                           </span>
                         </td>
 
