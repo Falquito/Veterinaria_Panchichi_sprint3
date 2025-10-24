@@ -2,19 +2,28 @@
 import { useState } from "react";
 import { Sidebar, SidebarBody, SidebarLink } from "../components/ui/sidebar";
 import {
+  IconChartBar,
   IconArrowLeft,
   IconBox,
   IconFileInvoice,
   IconBuildingWarehouse,
   IconClipboardList,
   IconTruckDelivery, // <-- Añadido
-  IconHistory
+  IconHistory,
+  IconCreditCardPay
 } from "@tabler/icons-react";
 import { motion } from "motion/react";
 import { cn } from "../lib/utils";
 
 export function SidebarDemo() {
   const links = [
+    {
+      label: "Dashboard",
+     href: "/dashboard",
+     icon: (
+       <IconChartBar className="h-5 w-5 shrink-0 text-neutral-700 dark:text-neutral-900" />
+     ),
+   },
     {
       label: "Productos",
       href: "/productos",
@@ -55,6 +64,13 @@ export function SidebarDemo() {
       href: "/comprobantes",
       icon: (
         <IconClipboardList className="h-5 w-5 shrink-0 text-neutral-700 dark:text-neutral-900" />
+      ),
+    },
+    {
+      label: "Orden de Pago",
+      href: "/orden-de-pago",
+      icon: (
+        <IconCreditCardPay className="h-5 w-5 shrink-0 text-neutral-700 dark:text-neutral-900" />
       ),
     },
     {

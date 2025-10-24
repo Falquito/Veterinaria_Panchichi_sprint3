@@ -430,7 +430,7 @@ function OrdenCompraContent() {
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
                         <div className="flex items-center text-sm text-gray-600">
-                          <Calendar className="h-4 w-4 mr-2 text-gray-400" />
+                          <Calendar className="h-4 w-4 mr-2 text-purple-600" />
                           {orden.fecha}
                         </div>
                       </td>
@@ -460,7 +460,7 @@ function OrdenCompraContent() {
                       <td className="px-6 py-4 whitespace-nowrap">
                         <div className="inline-flex items-center px-3 py-1.5 rounded-md bg-green-50 border border-green-200">
                           <DollarSign className="h-4 w-4 text-green-600 mr-1" />
-                          <span className="font-bold text-green-700">${parseFloat(orden.total).toFixed(2)}</span>
+                          <span className="font-bold text-green-700">{parseFloat(orden.total).toFixed(2)}</span>
                         </div>
                       </td>
                       <td className="px-6 py-4 text-center">
@@ -648,10 +648,7 @@ function OrdenCompraContent() {
                   >
                     {loading ? 'Registrando...' : 'Registrar Orden'}
                   </button>
-                  <button className="bg-gray-100 text-gray-700 px-8 py-3 rounded-lg hover:bg-gray-200 font-medium border border-gray-300 transition-colors">
-                    <Download className="mr-2 h-4 w-4 inline" />
-                    Descargar PDF
-                  </button>
+                  
                 </div>
               </div>
             </div>

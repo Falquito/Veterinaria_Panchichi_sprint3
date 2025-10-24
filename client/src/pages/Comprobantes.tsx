@@ -121,7 +121,7 @@ const NuevaFacturaModal: React.FC<{
   if (!open) return null;
 
   return (
-    <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-[60]" onClick={onClose}>
+    <div className="fixed inset-0 backdrop-blur-xl flex items-center justify-center p-4 z-[60]" onClick={onClose}>
       <div
         className="bg-white rounded-lg shadow-xl max-w-5xl w-full max-h-[90vh] overflow-hidden flex flex-col"
         onClick={(e) => e.stopPropagation()}

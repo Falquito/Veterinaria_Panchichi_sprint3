@@ -166,16 +166,7 @@ const OrdenDePagoList = () => {
                 className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               />
             </div>
-            <select
-              value={filtroEstado}
-              onChange={(e) => setFiltroEstado(e.target.value)}
-              className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-            >
-              <option value="">Todos los estados</option>
-              <option value="Pendiente">Pendiente</option>
-              <option value="Pagado">Pagado</option>
-              <option value="Anulado">Anulado</option>
-            </select>
+           
           </div>
         </div>
 
@@ -230,7 +221,7 @@ const OrdenDePagoList = () => {
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap">
                           <div className="flex items-center gap-2 text-sm text-gray-900">
-                            <Calendar className="w-4 h-4 text-gray-400" />
+                            <Calendar className="w-4 h-4 text-purple-600" />
                             {formatFecha(orden.fecha)}
                           </div>
                         </td>
