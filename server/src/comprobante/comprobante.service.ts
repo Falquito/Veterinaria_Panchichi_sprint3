@@ -52,7 +52,7 @@ export class ComprobanteService {
                 direccion_entrega,
                 numero:numero,
                 observaciones,
-                tipoFactura:tipoDeComprobante.tipo.toLowerCase()==="factura"?tipoDeFactura:"",
+                tipoFactura:tipoDeComprobante.tipo.toLowerCase()==="factura"?tipoDeFactura:null,
                 total:tipoDeComprobante.tipo.toLowerCase()==="factura"?total:0
               });
               console.log(comprobante)
