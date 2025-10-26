@@ -12,6 +12,8 @@ import { ComprobanteModule } from './comprobante/comprobante.module';
 import { MovimientosModule } from './movimientos/movimientos/movimientos.module';
 import { OrdenDePagoModule } from './orden-de-pago/orden-de-pago.module';
 import { VentasModule } from './ventas/ventas.module';
+import { ClienteModule } from './cliente/cliente.module';
+import { PaypalModule } from './paypal/paypal.module';
 
 @Module({
   imports: [ProductosModule,
@@ -44,7 +46,9 @@ import { VentasModule } from './ventas/ventas.module';
         ComprobanteModule,
         MovimientosModule,
         OrdenDePagoModule,
-        VentasModule
+        VentasModule,
+        ClienteModule,
+        PaypalModule
         
   ],
   controllers: [],
