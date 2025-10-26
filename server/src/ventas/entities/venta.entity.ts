@@ -10,12 +10,12 @@ export class Venta {
     @Column("text",{nullable:true})
     fecha:string;
 
-    @Column("int")
+    @Column("float",{nullable:true})
     total:number;
 
     @ManyToOne(()=>Clientes,(clientes)=>clientes.compras)
     clientes:Clientes
 
-    @OneToMany(()=>DetalleVenta,(detalleVenta)=>detalleVenta.venta)
+    @OneToMany(()=>DetalleVenta,(detalleVenta)=>detalleVenta.venta,{eager:true})
     detalles:DetalleVenta[]
 }

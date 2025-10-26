@@ -10,13 +10,19 @@ export class Clientes{
     @Column("text")
     nombre:string;
 
+    @Column("text",{nullable:true})
+    apellido:string
+
     @Column("text")
     email:string;
+
+    @Column("text",{nullable:true})
+    contraseña:string;
 
     @Column("bool",{default:true})
     activo:boolean;
 
-    @OneToMany(()=>Venta,(venta)=>venta.clientes)
+    @OneToMany(()=>Venta,(venta)=>venta.clientes,{eager:true})
     compras:Venta[]
 
     
