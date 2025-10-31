@@ -46,10 +46,25 @@ export class VentasService {
         });
         await queryRunner.manager.save(cliente);
       }
+      // 1. Obtener la fecha de hoy
+      const today = new Date();
 
+      // 2. Obtener las partes de la fecha
+      const year = today.getFullYear();
+
+      // getMonth() devuelve 0-11, por eso sumamos 1
+      // padStart(2, '0') asegura que tengamos '01', '02', etc.
+      const month = (today.getMonth() + 1).toString().padStart(2, '0');
+
+      // getDate() devuelve el día del mes
+      const day = today.getDate().toString().padStart(2, '0');
+
+      // 3. Unir todo
+      const formattedDate = `${year}-${month}-${day}`;
       const venta = queryRunner.manager.create(Venta,{
         total:total,
-        clientes:cliente
+        clientes:cliente,
+        fecha:formattedDate
       })
       await queryRunner.manager.save(venta)
       for(let item of items){
@@ -91,7 +106,11 @@ export class VentasService {
   }
 
   async findAll() {
-    return await this.ventasRepository.find()
+    return await this.ventasRepository.find({
+      select: ['id_venta', 'fecha', 'total'],
+      relations: [],
+      order: { id_venta: 'DESC' }
+    })
   }
 
   async findOne(id: number) {
