@@ -2,10 +2,13 @@ import React, { useState } from 'react';
 import EcommerceHeader from '../components/ecommerce/Ecommerceheader';
 import ProductList from '../components/ecommerce/ProductList';
 import CartSidebar from '../components/ecommerce/CartSidebar';
+import LoginModal from '../components/ecommerce/login-modal';
 
-const CatalogoComplete = () => {
+const CatalogoComplete = ({user,setUser}) => {
   const [cartItems, setCartItems] = useState([]);
   const [isCartOpen, setIsCartOpen] = useState(false);
+  const [isOpenUser,setOpenUser] = useState(false)
+  
 
   const handleAddToCart = (product) => {
     setCartItems(prevItems => {
@@ -51,12 +54,28 @@ const CatalogoComplete = () => {
     setIsCartOpen(false);
   };
 
+  const onCloseLoginModal = ()=>{
+    setOpenUser(false)
+  }
+
+  const onOpenLoginModal = ()=>{
+    setOpenUser(true)
+  }
+
+  const saveUser = (data)=>{
+    setUser(data)
+  }
+
   return (
     <div className="min-h-screen">
+      {isOpenUser && <LoginModal saveUser={saveUser} onClose={onCloseLoginModal} ></LoginModal>}
       <EcommerceHeader 
         cartItems={cartItems} 
         onCartClick={handleCartClick}
+        onOpenLoginModal={onOpenLoginModal}
+        User={user}
       />
+      {user && console.log(user)}
       
       <ProductList onAddToCart={handleAddToCart} />
       
