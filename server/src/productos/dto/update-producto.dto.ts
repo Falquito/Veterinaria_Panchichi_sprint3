@@ -9,9 +9,11 @@ import { IsArray, IsNumber, IsOptional, IsString, ValidateNested } from 'class-v
 import { Type } from 'class-transformer';
 
 class DepositoStockDto {
+    @Type(() => Number) 
   @IsNumber()
   IdDeposito: number;
 
+    @Type(() => Number) 
   @IsNumber()
   cantidad: number;
 }
@@ -26,11 +28,13 @@ export class UpdateProductoDto {
   descripcion?: string;
 
   @IsOptional()
+   @Type(() => Number)
   @IsNumber()
   precio?: number;
 
   @IsOptional()
   @IsNumber()
+   @Type(() => Number)
   categoriaId?: number;
 
   @IsOptional()

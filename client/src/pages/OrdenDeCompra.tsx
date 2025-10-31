@@ -217,12 +217,12 @@ function OrdenCompraContent() {
   const seleccionarProducto = (producto: Producto) => {
     const nuevosProductos = [...productosOrden];
     nuevosProductos[indiceProductoActual] = {
-      ...nuevosProductos[indiceProductoActual],
-      producto,
-      descripcion: producto.descripcion || producto.nombre,
-      precioUnitario: 0,
-      subtotal: 0
-    };
+  ...nuevosProductos[indiceProductoActual],
+  producto,
+  descripcion: producto.descripcion || producto.nombre,
+  precioUnitario: producto.precio || 0,
+  subtotal: (producto.precio || 0) * nuevosProductos[indiceProductoActual].cantidad
+};
     setProductosOrden(nuevosProductos);
     setOpen(false);
     setModalView(null);
@@ -596,13 +596,11 @@ function OrdenCompraContent() {
                           <div className="flex items-center space-x-2">
                             <span className="text-gray-500 text-sm">$</span>
                             <input
-                              type="number"
-                              min="0"
-                              step="0.01"
-                              value={item.precioUnitario}
-                              onChange={(e) => actualizarPrecio(indice, parseFloat(e.target.value) || 0)}
-                              className="w-28 p-2 border border-gray-300 rounded-md text-right focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
-                            />
+  type="number"
+  value={item.precioUnitario}
+  disabled
+  className="w-28 p-2 border border-gray-200 bg-gray-100 text-right text-gray-600 rounded-md cursor-not-allowed"
+/>
                           </div>
                         </td>
                         <td className="px-6 py-4 font-medium text-gray-900">
