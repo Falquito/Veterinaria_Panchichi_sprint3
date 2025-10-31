@@ -1,6 +1,7 @@
 import { Layout } from "./components/Layout";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import Products from "./pages/Product";
+import Catalogo from "./pages/Catalogo.jsx"; 
 import Depositos from "./pages/Depot";
 import OrdenDeCompraGenerator from "./pages/OrdenDeCompra.js";
 import Movimientos from "./pages/movimientos.jsx";
@@ -24,6 +25,7 @@ function App() {
           <Route path="orden-de-pago" element={<OrdenDePagoPage />} />
           <Route path="dashboard" element={<Dashboard />} />
         </Route>
+          <Route path="catalogo" element={<Catalogo />} /> 
       </Routes>
     </BrowserRouter>
   );
