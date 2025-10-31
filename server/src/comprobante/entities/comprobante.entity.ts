@@ -5,6 +5,7 @@ import { TipoDeFactura } from "src/entities/TipoDeFactura.entity";
 import { OrdenDeCompra } from "src/orden-de-compra/entities/orden-de-compra.entity";
 import { Proveedor } from "src/proveedores/entities/proveedor.entity";
 import { Column, Entity, JoinColumn, ManyToOne, OneToMany, OneToOne, PrimaryGeneratedColumn } from "typeorm";
+import { IsOptional} from "class-validator";
 
 @Entity()
 export class Comprobante {
@@ -31,18 +32,23 @@ export class Comprobante {
     deposito:Deposito;
 
     @Column({type:"int",nullable:true})
+    @IsOptional()
     numero:number;
 
     @Column({type:"text",nullable:true})
     observaciones:string;
 
+    
     @Column({type:"int",nullable:true})
+    @IsOptional()
     total:number;
 
+    @IsOptional()
     @Column({type:"text",nullable:true})
     direccion_entrega:string;
 
     @ManyToOne(()=>TipoDeFactura,(tipoDeFactura)=>tipoDeFactura.id ,{eager:true})
+      
     tipoFactura:TipoDeFactura|string;
 
     @Column({type:"varchar", length: 50, default: "disponible"})

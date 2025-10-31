@@ -1,50 +1,51 @@
 import { Type } from "class-transformer";
-import { IsArray, isNumber, IsNumber, IsOptional, IsString } from "class-validator";
+import { IsArray, IsNumber, IsOptional, IsString } from "class-validator";
 
 export class CreateComprobanteDto {
     @IsNumber()
-    idTipoDeComprobante:number;
+    idTipoDeComprobante: number;
 
     @IsString()
-    fecha:string;
+    fecha: string;
 
     @IsNumber()
-    idProveedor:number;
-
-
-    @IsNumber()
-    idOrdenDeCompra:number;
+    idProveedor: number;
 
     @IsNumber()
-    idDeposito:number;
+    idOrdenDeCompra: number;
+
+    @IsNumber()
+    idDeposito: number;
 
     @IsArray()
-    @Type(()=>comprobanteProductDto)
-    productos:comprobanteProductDto[]
+    @Type(() => comprobanteProductDto)
+    productos: comprobanteProductDto[];
 
     @IsString()
     @IsOptional()
-    observaciones:string;
-    
+    observaciones?: string;
+
+    @IsOptional()
     @IsNumber()
-    numero:number;
+    numero?: number;
+
+    @IsOptional()
     @IsNumber()
-    total:number;
+    total?: number;
 
     @IsOptional()
     @IsString()
-    direccion_entrega:string;
-    
+    direccion_entrega?: string;
 
-    
     @IsOptional()
-    idTipoFactura:number;
-    
+    @IsNumber()
+    idTipoFactura?: number;
 }
 
-export class comprobanteProductDto{
+export class comprobanteProductDto {
     @IsNumber()
-    idProducto:number;
+    idProducto: number;
+
     @IsNumber()
-    cantidad:number;
+    cantidad: number;
 }
