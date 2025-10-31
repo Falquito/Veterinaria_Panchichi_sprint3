@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
 
 const CartSidebar = ({ isOpen, onClose, cartItems, onUpdateQuantity, onRemoveItem }) => {
   const formatPrice = (price) => {
@@ -11,6 +11,58 @@ const CartSidebar = ({ isOpen, onClose, cartItems, onUpdateQuantity, onRemoveIte
   const getTotalPrice = () => {
     return cartItems.reduce((total, item) => total + (item.precio * item.quantity), 0);
   };
+
+
+  const paypalRef = useRef();
+
+useEffect(() => {
+  if (window.paypal && cartItems.length > 0) {
+    window.paypal.Buttons({
+      createOrder: (data, actions) => {
+        return actions.order.create({
+          purchase_units: [{
+            amount: {
+              value: getTotalPrice().toFixed(2),
+              currency_code: 'USD',
+            },
+            description: 'Compra en Veterinaria 🐾',
+          }],
+        });
+      },
+      onApprove: async (data, actions) => {
+        const order = await actions.order.capture();
+
+        // Datos para tu backend
+        const payload = {
+          total: getTotalPrice(),
+          items: cartItems.map(item => ({
+            id: item.id,
+            nombre: item.nombre,
+            cantidad: item.quantity,
+            precio: item.precio
+          })),
+          billingInfo: {
+            name: order.payer.name.given_name,
+            lastName: order.payer.name.surname,
+            email: order.payer.email_address
+          }
+        };
+
+        await fetch('http://localhost:3000/ventas/', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+
+        alert('Pago completado y venta registrada ✅');
+      },
+      onError: (err) => {
+        console.error('Error en PayPal:', err);
+        alert('Error al procesar el pago');
+      }
+    }).render(paypalRef.current);
+  }
+}, [cartItems]);
 
   return (
     <div className={`fixed inset-0 z-50 overflow-hidden transition-opacity duration-300 ${
@@ -160,9 +212,10 @@ const CartSidebar = ({ isOpen, onClose, cartItems, onUpdateQuantity, onRemoveIte
               </div>
               
               <div className="space-y-3">
-                <button className="w-full bg-cyan-600 text-white py-3 rounded-lg hover:bg-cyan-700 transition-colors font-medium">
+                {/* <button className="w-full bg-cyan-600 text-white py-3 rounded-lg hover:bg-cyan-700 transition-colors font-medium">
                   Proceder al checkout
-                </button>
+                </button> */}
+                <div ref={paypalRef}></div>
                 <button 
                   onClick={onClose}
                   className="w-full border border-gray-300 text-gray-700 py-3 rounded-lg hover:bg-gray-50 transition-colors font-medium"
