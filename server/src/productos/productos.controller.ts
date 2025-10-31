@@ -31,9 +31,12 @@ export class MultipartValidationPipe implements PipeTransform {
       }
     }
 
-    // Convertir números
-    if (value.precio) value.precio = Number(value.precio);
-    if (value.categoriaId) value.categoriaId = Number(value.categoriaId);
+  
+    if (value.precio !== undefined && value.precio !== null && value.precio !== "")
+  value.precio = Number(value.precio);
+
+if (value.categoriaId !== undefined && value.categoriaId !== null && value.categoriaId !== "")
+  value.categoriaId = Number(value.categoriaId);
 
     // Transformar cada objeto del array a su clase
     if (Array.isArray(value.depositos)) {
@@ -59,7 +62,7 @@ export class ProductosController {
   constructor(private readonly productosService: ProductosService) {}
 
   @Post()
-  @UseInterceptors(FileInterceptor('imagen',{storage}))
+  @UseInterceptors(FileInterceptor('image',{storage}))
   create(
     @Body(new MultipartValidationPipe(CreateProductoDto)) createProductoDto: CreateProductoDto,
     @UploadedFile() file:Express.Multer.File
@@ -85,9 +88,16 @@ export class ProductosController {
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateProductoDto: UpdateProductoDto) {
-    return this.productosService.update(+id, updateProductoDto);
-  }
+@UseInterceptors(FileInterceptor('image', { storage })) // 👈 Debe coincidir con "image" del frontend
+update(
+  @Param('id') id: string,
+  @Body(new MultipartValidationPipe(UpdateProductoDto)) updateProductoDto: UpdateProductoDto,
+  @UploadedFile() file?: Express.Multer.File,
+) {
+  console.log('📸 Archivo recibido:', file?.path);
+  return this.productosService.update(+id, updateProductoDto, file);
+}
+
 
   @Delete(':id')
   remove(@Param('id') id: string) {

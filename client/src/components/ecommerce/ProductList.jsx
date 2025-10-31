@@ -30,10 +30,10 @@ const ProductList = ({ onAddToCart }) => {
   const filteredAndSortedProducts = products
     .filter(product => {
       const matchesSearch = product.nombre.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                           product.descripcion.toLowerCase().includes(searchTerm.toLowerCase());
-      const matchesCategory = selectedCategory === '' || product.categoria === selectedCategory;
-      const isAvailable = product.activo && product.stock > 0;
-      return matchesSearch && matchesCategory && isAvailable;
+                     product.descripcion.toLowerCase().includes(searchTerm.toLowerCase());
+const matchesCategory = selectedCategory === '' || product.categoria === selectedCategory;
+const isActive = product.activo === true || product.activo === 'true';
+return matchesSearch && matchesCategory && isActive;
     })
     .sort((a, b) => {
       switch (sortBy) {
