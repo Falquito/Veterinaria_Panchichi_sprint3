@@ -18,6 +18,7 @@ const ProductList = ({ onAddToCart }) => {
       setLoading(true);
       const data = await getProducts();
       setProducts(data);
+      console.log(data)
     } catch (err) {
       setError('Error al cargar los productos');
       console.error(err);

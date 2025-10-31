@@ -17,11 +17,14 @@ import {
   TrendingDown,
   AlertTriangle,
   Package,
-  Activity,
-  FileDown
+  FileDown,
+  Calendar
 } from 'lucide-react';
 import jsPDF from 'jspdf';
 import { toPng } from 'html-to-image';
+import { DatePicker, Select } from 'antd';
+import type { Dayjs } from 'dayjs';
+import dayjs from 'dayjs';
 
 // Tipos simplificados para el dashboard (ajusta según tus datos reales)
 interface Ingreso {
@@ -86,6 +89,14 @@ export default function Dashboard() {
   const [productos, setProductos] = useState<ProductoResumen[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [fechaInicio, setFechaInicio] = useState<Dayjs | null>(null);
+  const [fechaFin, setFechaFin] = useState<Dayjs | null>(null);
+  const [granularidad, setGranularidad] = useState<'day' | 'month' | 'year'>('year');
+  const pickerMap: Record<typeof granularidad, 'date' | 'month' | 'year'> = {
+    day: 'date',
+    month: 'month',
+    year: 'year'
+  } as const;
 
   // Ref para exportar a PDF
   const pdfRef = useRef<HTMLDivElement>(null);
@@ -142,12 +153,12 @@ export default function Dashboard() {
         setLoading(true);
         setError(null);
         const [resIngresos, resEgresos, resProds] = await Promise.all([
-          fetch(`${API_BASE_URL}/facturas`),       // ingresos
+          fetch(`${API_BASE_URL}/ventas`),         // ingresos
           fetch(`${API_BASE_URL}/orden-de-pago`),  // egresos
           fetch(`${API_BASE_URL}/productos`)       // productos
         ]);
 
-        if (!resIngresos.ok) throw new Error('Error al cargar ingresos (facturas)');
+        if (!resIngresos.ok) throw new Error('Error al cargar ingresos (ventas)');
         if (!resEgresos.ok) throw new Error('Error al cargar egresos (órdenes de pago)');
         if (!resProds.ok) throw new Error('Error al cargar productos');
 
@@ -183,22 +194,41 @@ export default function Dashboard() {
     fetchData();
   }, []);
 
-  // Procesamiento de datos para gráficos (agrupados por mes)
-  const monthlyData = useMemo(() => {
-    const dataMap = new Map<string, { month: string; ingresos: number; egresos: number }>();
+  // Procesamiento de datos para gráficos (agrupación por día/mes/año)
+  const chartData = useMemo(() => {
+    const dataMap = new Map<string, { label: string; ingresos: number; egresos: number }>();
 
     const processItems = (items: (Ingreso | Egreso)[], type: 'ingresos' | 'egresos') => {
       items.forEach((item) => {
         try {
           const date = new Date((item as any).fecha);
-          const monthKey = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
-          const monthLabel = date.toLocaleString('es-AR', { month: 'short', year: 'numeric' });
 
-          if (!dataMap.has(monthKey)) {
-            dataMap.set(monthKey, { month: monthLabel, ingresos: 0, egresos: 0 });
+          // Aplicar filtro de fechas según granularidad
+          if (fechaInicio && date < fechaInicio.startOf(granularidad).toDate()) {
+            return; // Saltar este item si está antes de la fecha de inicio
+          }
+          if (fechaFin && date > fechaFin.endOf(granularidad).toDate()) {
+            return; // Saltar este item si está después de la fecha de fin
           }
 
-          const monthEntry = dataMap.get(monthKey)!;
+          let key: string;
+          let label: string;
+          if (granularidad === 'day') {
+            key = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
+            label = date.toLocaleDateString('es-AR', { day: '2-digit', month: 'short', year: 'numeric' });
+          } else if (granularidad === 'month') {
+            key = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
+            label = date.toLocaleString('es-AR', { month: 'short', year: 'numeric' });
+          } else {
+            key = `${date.getFullYear()}`;
+            label = date.toLocaleString('es-AR', { year: 'numeric' });
+          }
+
+          if (!dataMap.has(key)) {
+            dataMap.set(key, { label, ingresos: 0, egresos: 0 });
+          }
+
+          const monthEntry = dataMap.get(key)!;
           const amount =
             type === 'ingresos' ? (item as Ingreso).total : (item as Egreso).montoTotal;
           monthEntry[type] += Number(amount) || 0;
@@ -217,17 +247,40 @@ export default function Dashboard() {
         ...value,
         resultado: value.ingresos - value.egresos
       }));
-  }, [ingresos, egresos]);
+  }, [ingresos, egresos, fechaInicio, fechaFin, granularidad]);
 
   // Calcular KPIs Totales
   const kpis = useMemo(() => {
-    const totalIngresos = ingresos.reduce((sum, i) => sum + (Number(i.total) || 0), 0);
-    const totalEgresos = egresos.reduce((sum, e) => sum + (Number(e.montoTotal) || 0), 0);
+    // Filtrar ingresos y egresos según el rango de fechas
+    const ingresosFiltrados = ingresos.filter((ingreso) => {
+      try {
+        const date = new Date(ingreso.fecha);
+        if (fechaInicio && date < fechaInicio.startOf(granularidad).toDate()) return false;
+        if (fechaFin && date > fechaFin.endOf(granularidad).toDate()) return false;
+        return true;
+      } catch {
+        return false;
+      }
+    });
+
+    const egresosFiltrados = egresos.filter((egreso) => {
+      try {
+        const date = new Date(egreso.fecha);
+        if (fechaInicio && date < fechaInicio.startOf(granularidad).toDate()) return false;
+        if (fechaFin && date > fechaFin.endOf(granularidad).toDate()) return false;
+        return true;
+      } catch {
+        return false;
+      }
+    });
+
+    const totalIngresos = ingresosFiltrados.reduce((sum, i) => sum + (Number(i.total) || 0), 0);
+    const totalEgresos = egresosFiltrados.reduce((sum, e) => sum + (Number(e.montoTotal) || 0), 0);
     const resultadoNeto = totalIngresos - totalEgresos;
     const productosBajoStock = productos.filter((p) => p.stock > 0 && p.stock <= 10).length;
 
     return { totalIngresos, totalEgresos, resultadoNeto, productosBajoStock };
-  }, [ingresos, egresos, productos]);
+  }, [ingresos, egresos, productos, fechaInicio, fechaFin, granularidad]);
 
   const productosConStockBajo = useMemo(() => {
     return productos
@@ -273,6 +326,56 @@ export default function Dashboard() {
         </button>
       </div>
 
+      {/* Filtros de Fecha y Granularidad */}
+      <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
+          <div className="flex items-center gap-2">
+            <Calendar className="w-5 h-5 text-gray-600" />
+            <span className="text-sm font-medium text-gray-700">Filtrar por rango de fechas:</span>
+          </div>
+          <div className="flex flex-wrap items-center gap-3">
+            <Select
+              className="no-pdf"
+              value={granularidad}
+              onChange={(v) => setGranularidad(v as any)}
+              options={[
+                { label: 'Por día', value: 'day' },
+                { label: 'Por mes', value: 'month' },
+                { label: 'Por año', value: 'year' },
+              ]}
+            />
+            <DatePicker
+              picker={pickerMap[granularidad]}
+              placeholder="Fecha inicio"
+              value={fechaInicio}
+              onChange={(date) => setFechaInicio(date)}
+              format={granularidad === 'day' ? 'DD/MM/YYYY' : granularidad === 'month' ? 'MMMM YYYY' : 'YYYY'}
+              className="no-pdf"
+            />
+            <span className="text-gray-500">hasta</span>
+            <DatePicker
+              picker={pickerMap[granularidad]}
+              placeholder="Fecha fin"
+              value={fechaFin}
+              onChange={(date) => setFechaFin(date)}
+              format={granularidad === 'day' ? 'DD/MM/YYYY' : granularidad === 'month' ? 'MMMM YYYY' : 'YYYY'}
+              className="no-pdf"
+            />
+            {(fechaInicio || fechaFin) && (
+              <button
+                onClick={() => {
+                  setFechaInicio(null);
+                  setFechaFin(null);
+                }}
+                className="no-pdf px-4 py-2 text-sm text-gray-700 hover:text-gray-900 border border-gray-300 rounded-md hover:bg-gray-50 transition"
+              >
+                Limpiar
+              </button>
+            )}
+          </div>
+        </div>
+      </div>
+
       {/* KPIs */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         <KpiCard
@@ -308,11 +411,11 @@ export default function Dashboard() {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
         {/* Gráfico Ingresos vs Egresos */}
         <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 h-[400px]">
-          <h2 className="text-lg font-semibold text-gray-800 mb-4">Ingresos vs Egresos Mensuales</h2>
+          <h2 className="text-lg font-semibold text-gray-800 mb-4">Ingresos vs Egresos</h2>
           <ResponsiveContainer width="100%" height="100%">
-            <BarChart data={monthlyData} margin={{ top: 5, right: 0, left: 20, bottom: 40 }}>
+            <BarChart data={chartData} margin={{ top: 5, right: 0, left: 20, bottom: 40 }}>
               <CartesianGrid strokeDasharray="3 3" vertical={false} />
-              <XAxis dataKey="month" angle={-45} textAnchor="end" height={60} interval={0} fontSize={12} />
+              <XAxis dataKey="label" angle={-45} textAnchor="end" height={60} interval={0} fontSize={12} />
               <YAxis tickFormatter={(value: number) => value.toLocaleString('es-AR')} fontSize={12} />
               <Tooltip formatter={(value: any) => currencyFormatter(value)} />
               <Legend verticalAlign="top" height={36} />
@@ -324,16 +427,16 @@ export default function Dashboard() {
 
         {/* Gráfico Resultados */}
         <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 h-[400px]">
-          <h2 className="text-lg font-semibold text-gray-800 mb-4">Resultado Mensual</h2>
+          <h2 className="text-lg font-semibold text-gray-800 mb-4">Resultado</h2>
           <ResponsiveContainer width="100%" height="100%">
-            <BarChart data={monthlyData} margin={{ top: 5, right: 0, left: 20, bottom: 40 }}>
+            <BarChart data={chartData} margin={{ top: 5, right: 0, left: 20, bottom: 40 }}>
               <CartesianGrid strokeDasharray="3 3" vertical={false} />
-              <XAxis dataKey="month" angle={-45} textAnchor="end" height={60} interval={0} fontSize={12} />
+              <XAxis dataKey="label" angle={-45} textAnchor="end" height={60} interval={0} fontSize={12} />
               <YAxis tickFormatter={(value: number) => value.toLocaleString('es-AR')} fontSize={12} />
               <Tooltip formatter={(value: any) => currencyFormatter(value)} />
               <Legend verticalAlign="top" height={36} />
               <Bar dataKey="resultado" name="Resultado (Ingresos - Egresos)" radius={[4, 4, 0, 0]}>
-                {monthlyData.map((entry, index) => (
+                {chartData.map((entry, index) => (
                   <Cell key={`cell-${index}`} fill={entry.resultado >= 0 ? '#3b82f6' : '#f87171'} />
                 ))}
               </Bar>

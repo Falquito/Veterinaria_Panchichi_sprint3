@@ -85,6 +85,7 @@ export class ProductosService {
         p.nombre        AS "nombreProducto",
         p.descripcion,
         p.precio,
+        p."ImagenURL",  -- 1. AÑADIR AQUÍ (con comillas dobles)
         c.nombre        AS "nombreCategoria",
         p.fecha_vencimiento,
         pd.stock
@@ -112,7 +113,8 @@ export class ProductosService {
                     precio: row.precio,
                     stock: row.stock,
                     nombreCategoria: row.nombreCategoria,
-                    fecha_vencimiento:row.fecha_vencimiento
+                    fecha_vencimiento:row.fecha_vencimiento,
+                    ImagenURL: row.ImagenURL // 2. AÑADIR AQUÍ
                 });
                 return acc;
             }, []);

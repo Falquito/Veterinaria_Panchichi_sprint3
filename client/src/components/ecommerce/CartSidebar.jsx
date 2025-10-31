@@ -1,6 +1,6 @@
 import React, { useEffect, useRef } from 'react';
 
-const CartSidebar = ({ isOpen, onClose, cartItems, onUpdateQuantity, onRemoveItem }) => {
+const CartSidebar = ({ isOpen, onClose, cartItems, onUpdateQuantity, onRemoveItem, User }) => {
   const formatPrice = (price) => {
     return new Intl.NumberFormat('es-AR', {
       style: 'currency',
@@ -34,6 +34,7 @@ useEffect(() => {
 
         // Datos para tu backend
         const payload = {
+
           total: getTotalPrice(),
           items: cartItems.map(item => ({
             id: item.id,
@@ -44,7 +45,7 @@ useEffect(() => {
           billingInfo: {
             name: order.payer.name.given_name,
             lastName: order.payer.name.surname,
-            email: order.payer.email_address
+            email: User.email
           }
         };
 

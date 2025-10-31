@@ -10,7 +10,8 @@ import {
   IsCreditCard,
   Length,
   Matches,
-  IsObject
+  IsObject,
+  IsOptional
 } from 'class-validator';
 import { Type } from 'class-transformer';
 
@@ -68,6 +69,7 @@ class ProductCart {
   precio: number;
 
   @IsString({ message: 'La URL de la imagen debe ser un texto' })
+  @IsOptional()
   imagenURL: string; // Opcional: @IsUrl() si quieres validar que sea una URL
 
   @IsNumber({}, { message: 'La cantidad debe ser un número' })
@@ -86,6 +88,7 @@ export class CreateVentaDto {
   @IsObject({ message: 'La información de la tarjeta debe ser un objeto' })
   @ValidateNested({ message: 'La información de la tarjeta no es válida' })
   @Type(() => CardInfo) // <-- Importante para la validación anidada
+  @IsOptional()
   cardInfo: CardInfo;
 
   @IsArray({ message: 'Los items deben ser un arreglo' })

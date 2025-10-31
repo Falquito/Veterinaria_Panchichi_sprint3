@@ -80,6 +80,7 @@ const CatalogoComplete = ({user,setUser}) => {
       <ProductList onAddToCart={handleAddToCart} />
       
       <CartSidebar
+        User={user}
         isOpen={isCartOpen}
         onClose={handleCloseCart}
         cartItems={cartItems}
